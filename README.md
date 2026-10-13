@@ -1,5 +1,7 @@
 # 🤖 FICL Chatbot — RAG + LLM 챗봇 학습 예제
 
+**한국어** | [简体中文](README.zh-CN.md)
+
 GGUF 양자화된 한국어 LLM을 로컬 PC에서 실행하거나 서버에 등록된 API 모델을 사용하고, 업로드한 문서를 참고해 답변하는 RAG(검색 증강 생성) 챗봇 예제입니다.
 
 > **학습 목표**
@@ -25,6 +27,7 @@ FICL_Chatbot/
 ├── models/            # 🚨 GGUF 모델을 직접 다운로드해서 넣는 폴더
 ├── rag_index/         # 업로드한 자료의 벡터 인덱스 (자동 생성)
 ├── uploads/           # 업로드한 원본 파일 (자동 생성, Git 제외)
+├── README.zh-CN.md    # 简体中文版说明
 └── README.md          # 이 파일
 ```
 
