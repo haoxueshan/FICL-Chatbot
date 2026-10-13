@@ -1,0 +1,5 @@
+# API/RAG 공통 의존성은 한 곳에서 관리한다.
+-r requirements-api.txt
+
+# 로컬 GGUF 실행에만 필요. 기본은 CPU 빌드.
+llama-cpp-python>=0.2.90

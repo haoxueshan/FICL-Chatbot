@@ -1,0 +1,27 @@
+[
+  {
+    "id": "qianwen",
+    "name": "通义千问",
+    "base_url": "https://maas.qianwenaiapi.com/compatible-mode/v1/chat/completions",
+    "api_key": "",
+    "models": [
+      {
+        "id": "qwen3.8-max",
+        "name": "qwen3.8-max",
+        "enable_thinking": true
+      }
+    ]
+  },
+  {
+    "id": "deepseek",
+    "name": "深度求索",
+    "base_url": "https://api.deepseek.com/chat/completions",
+    "api_key": "",
+    "models": [
+      {
+        "id": "deepseek-flash",
+        "name": "deepseek-flash"
+      }
+    ]
+  }
+]

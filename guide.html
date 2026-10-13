@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FICL Chatbot — 사용설명서 · User Guide · 中文指南</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --accent: #7c3aed;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --code-bg: #1f2937;
+    --code-text: #e5e7eb;
+    --success: #059669;
+    --warning: #d97706;
+    --info: #0284c7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: #fff; padding: 48px 36px; border-radius: 20px; margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, .3);
+    position: relative; overflow: hidden;
+  }
+  header.hero::after {
+    content: ""; position: absolute; right: -40px; top: -40px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: rgba(255,255,255,.08);
+  }
+  header.hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; position: relative; }
+  header.hero p { font-size: 16px; opacity: 0.95; max-width: 640px; position: relative; }
+  header.hero .meta { margin-top: 20px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; position: relative; }
+  header.hero .meta span { padding: 4px 12px; background: rgba(255,255,255,.18); border-radius: 20px; }
+
+  .lang-toggle {
+    position: sticky; top: 12px; z-index: 100;
+    display: flex; justify-content: flex-end; margin-bottom: 20px;
+  }
+  .lang-toggle .pill {
+    display: inline-flex; background: #fff; border: 1px solid var(--border);
+    border-radius: 999px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  }
+  .lang-toggle button {
+    padding: 8px 18px; border: none; background: transparent; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: var(--muted); font-family: inherit;
+    transition: all .15s;
+  }
+  .lang-toggle button.active {
+    background: var(--primary); color: #fff;
+  }
+
+  nav.toc {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,.03);
+  }
+  nav.toc h3 { font-size: 13px; color: var(--muted); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  nav.toc ol { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  nav.toc li { font-size: 14px; }
+  nav.toc a { color: var(--primary); text-decoration: none; font-weight: 500; }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc .num { display: inline-block; width: 22px; height: 22px; line-height: 22px; text-align: center; background: var(--primary); color: #fff; border-radius: 50%; font-size: 11px; margin-right: 8px; }
+
+  section.card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 32px 36px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,.03);
+  }
+  section.card h2 {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  section.card h2 .emoji { font-size: 24px; }
+  section.card h3 {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    margin: 22px 0 10px; display: flex; align-items: center; gap: 6px;
+  }
+  section.card p { margin: 10px 0; color: #374151; }
+  section.card ul, section.card ol { margin: 10px 0 10px 24px; }
+  section.card li { margin: 6px 0; }
+
+  .step-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px; margin: 16px 0;
+  }
+  .step-grid .step {
+    background: #f9fafb; border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; position: relative;
+  }
+  .step .num {
+    position: absolute; top: 10px; right: 12px;
+    background: var(--primary); color: #fff;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; padding-right: 32px; }
+  .step p { font-size: 13.5px; margin: 4px 0; color: var(--muted); }
+
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 14px 18px; border-radius: 10px; overflow-x: auto;
+    font-family: 'Fira Code', Consolas, monospace; font-size: 13px; line-height: 1.6;
+    margin: 12px 0;
+  }
+  code {
+    background: #f3f4f6; color: #be123c; padding: 2px 6px;
+    border-radius: 4px; font-family: 'Fira Code', Consolas, monospace;
+    font-size: 90%;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; }
+
+  .callout {
+    padding: 14px 18px; border-radius: 10px; margin: 14px 0;
+    border-left: 4px solid; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .callout.tip { background: #ecfdf5; border-color: var(--success); color: #064e3b; }
+  .callout.warn { background: #fef3c7; border-color: var(--warning); color: #78350f; }
+  .callout.info { background: #e0f2fe; border-color: var(--info); color: #075985; }
+  .callout .icon { font-size: 20px; line-height: 1; }
+  .callout strong { font-weight: 700; }
+
+  .flow {
+    background: #f9fafb; border-radius: 12px; padding: 20px; margin: 16px 0;
+    font-family: 'Fira Code', Consolas, monospace; font-size: 13px;
+    overflow-x: auto; line-height: 1.8;
+  }
+  .flow .arrow { color: var(--primary); font-weight: 700; }
+  .flow .step-label { background: #fff; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); display: inline-block; margin: 2px 0; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 14px 0;
+    background: #fff; border-radius: 10px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: left; font-size: 13px; font-weight: 700; }
+  td { padding: 10px 14px; border-top: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+  tr:hover td { background: #f9fafb; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600;
+  }
+  .badge.grounded { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+  .badge.fallback { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+
+  .usecase {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; margin: 16px 0;
+  }
+  .usecase .card-small {
+    background: linear-gradient(135deg, #faf5ff, #eef2ff);
+    border: 1px solid #e0e7ff; border-radius: 12px; padding: 18px;
+  }
+  .usecase .card-small h4 {
+    font-size: 15px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .usecase .card-small p { font-size: 13.5px; color: #374151; margin: 0; }
+  .usecase .card-small .ex {
+    background: #fff; border: 1px solid #e0e7ff; border-radius: 6px;
+    padding: 8px 10px; margin-top: 10px; font-size: 12.5px; color: var(--muted); font-style: italic;
+  }
+
+  /* Glossary */
+  .glossary-group {
+    margin: 20px 0 16px;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, #faf5ff 0%, #eef2ff 100%);
+    border-radius: 10px; border-left: 4px solid var(--accent);
+    font-size: 15px; font-weight: 700; color: var(--primary-dark);
+  }
+  .term-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px; margin: 10px 0 24px;
+  }
+  .term {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .term .t-title {
+    font-size: 14px; font-weight: 700; color: var(--primary-dark);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .term .t-title code {
+    background: #f3f4f6; color: #be123c; padding: 1px 6px;
+    border-radius: 4px; font-size: 12px;
+  }
+  .term .t-desc { font-size: 13px; color: #374151; line-height: 1.65; }
+  .term .t-desc code { font-size: 85%; }
+  .term .t-note {
+    margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+
+  .lang-ko .en-only, .lang-en .ko-only { display: none; }
+  .zh-version { display: none; }
+  .lang-zh .zh-version { display: block; }
+  .lang-zh .wrap > header.hero,
+  .lang-zh .wrap > nav.toc,
+  .lang-zh .wrap > section.card,
+  .lang-zh .wrap > footer { display: none; }
+
+  footer {
+    text-align: center; padding: 32px 0 10px; color: var(--muted); font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 12px 60px; }
+    header.hero { padding: 32px 20px; }
+    header.hero h1 { font-size: 24px; }
+    section.card { padding: 20px 18px; }
+    nav.toc ol { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    .lang-toggle, nav.toc { display: none; }
+    body { background: #fff; }
+    .wrap { padding: 0; max-width: none; }
+    section.card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body class="lang-ko">
+
+<div class="wrap">
+
+  <div class="lang-toggle">
+    <div class="pill">
+      <button id="btn-ko" class="active" onclick="setLang('ko')">🇰🇷 한국어</button>
+      <button id="btn-en" onclick="setLang('en')">🇺🇸 English</button>
+      <button id="btn-zh" onclick="setLang('zh')">🇨🇳 简体中文</button>
+    </div>
+  </div>
+
+  <div class="zh-version" lang="zh-CN">
+    <header class="hero">
+      <h1>🤖 FICL Chatbot 使用指南</h1>
+      <p>基于本地 GGUF 大语言模型与多文档 RAG 的教学型聊天机器人——从安装到实践</p>
+      <div class="meta">
+        <span>📚 学生教材</span>
+        <span>🧠 RAG + LLM</span>
+        <span>💻 本地电脑运行</span>
+        <span>🆓 开源</span>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <h3>📑 目录</h3>
+      <ol>
+        <li><span class="num">1</span><a href="#zh-intro">概述与学习目标</a></li>
+        <li><span class="num">2</span><a href="#zh-install">安装与启动</a></li>
+        <li><span class="num">3</span><a href="#zh-basic">基本用法</a></li>
+        <li><span class="num">4</span><a href="#zh-rag">RAG 工作原理</a></li>
+        <li><span class="num">5</span><a href="#zh-multi">多文档 RAG</a></li>
+        <li><span class="num">6</span><a href="#zh-usecase">应用场景</a></li>
+        <li><span class="num">7</span><a href="#zh-extend">进阶学习</a></li>
+        <li><span class="num">8</span><a href="#zh-trouble">故障排查</a></li>
+        <li><span class="num">9</span><a href="#zh-glossary">术语表</a></li>
+      </ol>
+    </nav>
+
+    <section class="card" id="zh-intro">
+      <h2><span class="emoji">🎯</span>1. 概述与学习目标</h2>
+      <p>FICL Chatbot 可在普通电脑上<strong>本地运行量化后的 GGUF 大语言模型</strong>，也可以使用服务器配置的 API 模型，并依据用户上传的文档回答问题，是一个典型的 <strong>RAG（检索增强生成）聊天机器人</strong>。选择本地模型时，问题和检索到的资料不会发送给第三方模型服务。</p>
+      <h3>🧭 你可以学到什么</h3>
+      <ul>
+        <li><strong>GGUF 量化模型</strong>是什么，以及如何在 CPU/GPU 上运行。</li>
+        <li><strong>RAG 流程</strong>：嵌入、向量检索与上下文注入。</li>
+        <li><strong>提示词工程</strong>的实际作用，以及 grounded 与 fallback 模式的区别。</li>
+        <li>使用 <strong>FastAPI + SSE（服务器发送事件）</strong>实现逐令牌流式输出。</li>
+        <li>同时引用多个文件的<strong>多文档 RAG</strong>设计方法。</li>
+      </ul>
+      <div class="callout tip">
+        <span class="icon">💡</span>
+        <div><strong>为什么使用本地 LLM？</strong><br>① 学习与作业资料不外传　② 无 API 调用费用　③ 可离线运行　④ 可以直接观察内部工作流程。</div>
+      </div>
+    </section>
+
+    <section class="card" id="zh-install">
+      <h2><span class="emoji">⚙️</span>2. 安装与启动</h2>
+      <h3>📋 准备工作</h3>
+      <ul>
+        <li><strong>Python 3.10+</strong> — 从 <a href="https://www.python.org/downloads/" target="_blank">python.org</a> 安装，并勾选“Add Python to PATH”。</li>
+        <li><strong>模型来源</strong> — 本地运行需要 GGUF 文件（测试可选约 1GB 的 Qwen2.5-1.5B）；API 模式需在后端配置模型和密钥。</li>
+        <li><strong>至少 8GB 内存</strong> — 运行较大模型建议 16GB 以上。</li>
+      </ul>
+      <h3>🚀 五分钟安装</h3>
+      <div class="step-grid">
+        <div class="step"><span class="num">1</span><h4>准备模型</h4><p>本地模式：从 HuggingFace 下载 GGUF 文件并放入 <code>models/</code>。API 模式：按 README 在后端 <code>api_models.json</code> 中登记模型并填写 <code>api_key</code>。</p></div>
+        <div class="step"><span class="num">2</span><h4>运行启动脚本</h4><p>Windows 双击 <code>start.bat</code>；Linux/macOS 运行 <code>./start.sh</code>。首次启动会创建虚拟环境并安装依赖，约需 5～10 分钟。</p></div>
+        <div class="step"><span class="num">3</span><h4>打开浏览器</h4><p><code>http://localhost:7861</code></p><p>在顶部下拉框中选择本地模型或后端已配置的 API 模型。</p></div>
+        <div class="step"><span class="num">4</span><h4>上传资料并提问</h4><p>点击 📁，上传 PDF、DOCX、XLSX、TXT 或 MD 文件，然后输入问题。</p></div>
+      </div>
+      <div class="callout info">
+        <span class="icon">⚡</span>
+        <div><strong>GPU 加速（可选）</strong><br>使用 NVIDIA GPU 时，生成速度通常可提升 5～10 倍。具体安装方式请参阅 README 的“GPU 加速”章节。</div>
+      </div>
+    </section>
+
+    <section class="card" id="zh-basic">
+      <h2><span class="emoji">💬</span>3. 基本用法</h2>
+      <h3>🖥 界面说明</h3>
+      <table>
+        <thead><tr><th>区域</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><strong>顶部语言下拉框</strong></td><td>选择“中文”或“한국어”，界面文字与之后生成的回答会使用所选语言；已发送的对话不会自动翻译。选择会保存在浏览器中。</td></tr>
+          <tr><td><strong>顶部模型下拉框</strong></td><td>选择后端提供的本地或 API 模型；不可用的模型会禁用。选择 API 模型后可点击“测试 API 连接”，手动检查密钥与模型配置；测试可能产生少量 API 费用。</td></tr>
+          <tr><td><strong>📁 上传文件</strong></td><td>支持 PDF、DOCX、XLSX、TXT、MD；单文件最多 20 MB，每次最多 10 个且总量不超过 50 MB。不同名文件会追加，同名文件会替换旧内容；索引自动持久化。</td></tr>
+          <tr><td><strong>已上传文件目录</strong></td><td>原文件保存在后端 <code>uploads/</code>，页面会列出文件、大小和片段数；可逐个删除并同步移除索引。旧索引若无原文件会显示“原文件未保存”。</td></tr>
+          <tr><td><strong>清空全部资料</strong></td><td>永久删除所有上传的原文件和向量索引，使 RAG 回到无资料状态。</td></tr>
+          <tr><td><strong>聊天输入框</strong></td><td>按 Enter 发送，按 Shift+Enter 换行。</td></tr>
+          <tr><td><strong>回答下方信息</strong></td><td>显示本次使用的模型，以及回答是“基于资料”还是“资料范围外”。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout info">
+        <span class="icon">☁️</span>
+        <div><strong>使用 API 模型</strong><br>由服务器管理员在 Git 忽略的 <code>api_models.json</code> 中登记 API 地址、模型清单与实际密钥 <code>api_key</code>；后端直接读取该字段，不再通过环境变量查找密钥。前端只发送所选模型 ID，不会接收密钥。列表显示“可用”仅表示已配置密钥，不代表服务端已验证密钥；使用 API 模型时，问题和 RAG 检索结果会发送给该 API 服务。配置示例见 README。</div>
+      </div>
+      <div class="callout warn"><span class="icon">🔐</span><div><strong>局域网访问</strong><br>默认仅允许本机访问。若将 <code>HOST</code> 改为 <code>0.0.0.0</code> 等对外地址，必须先设置至少 16 个字符的独立 <code>APP_ACCESS_TOKEN</code>；访问者在网页输入该令牌。请优先使用 HTTPS，避免令牌在不可信网络中明文传输。</div></div>
+<pre><code># api_models.json：一个服务可以配置多个模型
+[{"id":"example","name":"Example API","base_url":"https://api.example.com/v1","api_key":"YOUR_KEY","models":["example-small","example-large"]}]</code></pre>
+      <h3>🏷 两种回答模式</h3>
+      <table>
+        <thead><tr><th>徽章</th><th>含义</th><th>出现条件</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge grounded">📚 基于资料 · 引用 N 项</span></td><td>主要依据上传文件中的事实回答，并用“（资料 1）”“（资料 2）”标注来源。</td><td>问题与上传资料高度相关，相似度 ≥ 0.55。</td></tr>
+          <tr><td><span class="badge fallback">💭 资料范围外 · 通用知识</span></td><td>改用模型自身的通用知识回答，并在开头说明超出上传资料范围。</td><td>没有索引，或问题与资料相关性较低。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="zh-rag">
+      <h2><span class="emoji">🧠</span>4. RAG 工作原理</h2>
+      <p><strong>RAG（Retrieval-Augmented Generation）</strong>即“检索 + 生成”。LLM 只能依赖训练时学到的知识，直接询问私有 PDF 或表格内容容易产生幻觉。RAG 会先从上传资料中检索相关片段，再把片段和问题一起交给 LLM，从而提高准确性。</p>
+      <h3>📥 资料上传流程</h3>
+      <div class="flow"><span class="step-label">PDF/DOCX/XLSX</span> <span class="arrow">→</span> <span class="step-label">提取文本</span> <span class="arrow">→</span> <span class="step-label">每 500 字分块</span> <span class="arrow">→</span> <span class="step-label">嵌入为 768 维向量</span> <span class="arrow">→</span> <span class="step-label">持久化到 <code>rag_index/</code></span></div>
+      <h3>🔎 问题处理流程</h3>
+      <div class="flow"><span class="step-label">用户问题</span> <span class="arrow">→</span> <span class="step-label">问题向量化</span> <span class="arrow">→</span> <span class="step-label">余弦相似度 Top-K</span> <span class="arrow">→</span> <span class="step-label">判断模式</span> <span class="arrow">→</span> <span class="step-label">组装提示词</span> <span class="arrow">→</span> <span class="step-label">LLM 流式生成</span></div>
+      <h3>📐 核心公式</h3>
+      <p>归一化向量的点积等于余弦相似度。越接近 1 表示语义越相关，越接近 0 表示越不相关。</p>
+<pre><code>sim(q, d) = q_vec · d_vec        # 归一化向量
+mode = "grounded"  if max(sim) ≥ 0.55
+mode = "fallback"  otherwise</code></pre>
+    </section>
+
+    <section class="card" id="zh-multi">
+      <h2><span class="emoji">📚</span>5. 多文档 RAG——核心特点</h2>
+      <p>常见 RAG 会从所有文本块中选择全局 Top-K。如果某一个文件的相似度普遍较高，它可能独占检索结果。FICL Chatbot 改为<strong>分别从每个上传文件中选择 Top-K</strong>，让不同文档都有机会进入上下文，便于跨资料比较和综合。</p>
+      <h3>🆚 方法比较</h3>
+      <table>
+        <thead><tr><th>方法</th><th>优点</th><th>缺点</th></tr></thead>
+        <tbody>
+          <tr><td><strong>全局 Top-K</strong></td><td>简单、快速。</td><td>一个文档可能独占结果，其他文档被忽略。</td></tr>
+          <tr style="background:#f0f9ff;"><td><strong>按文档 Top-K ✓</strong></td><td>公平引用多个文档，适合比较与综合。</td><td>会消耗更多上下文令牌。</td></tr>
+        </tbody>
+      </table>
+      <h3>📎 示例：上传三个文件后提问</h3>
+<pre><code># 上传的资料
+- lecture_notes.pdf       （课堂笔记）
+- textbook_ch3.pdf        （教材第 3 章）
+- lab_results.xlsx        （实验结果）
+
+# 问题
+“请分析实验结果与教材理论有哪些不同。”
+
+# 发送给 LLM 的上下文（每个文件取 Top-3）
+[资料 1 · textbook_ch3.pdf]
+  ...理论说明...
+[资料 2 · lab_results.xlsx]
+  ...测量数据表...
+[资料 3 · lecture_notes.pdf]
+  ...补充说明...</code></pre>
+      <p>LLM 可以分别引用三份资料，例如说明“资料 1 与资料 2 的数值存在……差异”，并指出资料之间互相矛盾的部分。</p>
+    </section>
+
+    <section class="card" id="zh-usecase">
+      <h2><span class="emoji">🎓</span>6. 应用场景——如何用于课程与作业</h2>
+      <div class="usecase">
+        <div class="card-small"><h4>📖 课程资料综合助手</h4><p>上传多门课程的 PDF 笔记，复习时比较同一概念在不同课程中的讲法。</p><div class="ex">例：“概率分布在统计学和机器学习课程中分别如何解释？”</div></div>
+        <div class="card-small"><h4>🔬 论文评审与摘要</h4><p>同时上传多篇论文，按文档比较核心主张、方法和局限。</p><div class="ex">例：“分别总结三篇论文在评估方法上的区别。”</div></div>
+        <div class="card-small"><h4>📊 实验数据分析</h4><p>同时上传实验结果 Excel 和理论教材 PDF，分析测量值与理论的偏差。</p><div class="ex">例：“测量值与理论预测相差多少？”</div></div>
+        <div class="card-small"><h4>📝 报告与作业助手</h4><p>上传参考资料后，在写作过程中即时核对事实，降低幻觉风险。</p><div class="ex">例：“根据这份资料，2023 年的销售额是多少？”</div></div>
+        <div class="card-small"><h4>👥 小组共享知识库</h4><p>汇总组员的研究资料，让每个人都能检索其他成员收集的内容。</p><div class="ex">例：在局域网开放 7861 端口，供同一网络中的组员访问。</div></div>
+        <div class="card-small"><h4>🧪 模型对比实验</h4><p>向 Qwen2.5-1.5B、EXAONE 和 Qwen3-8B 提出相同问题，比较质量与速度。</p><div class="ex">例：“为什么小模型更快，但回答质量通常更低？”</div></div>
+        <div class="card-small"><h4>🏢 校内制度问答机器人</h4><p>上传院系规章、课程表和手册，为新生提供问答服务。</p><div class="ex">例：“毕业需要多少学分？”“休学申请流程是什么？”</div></div>
+        <div class="card-small"><h4>💼 面试准备与角色扮演</h4><p>上传简历和公司介绍，让模型生成模拟面试题。</p><div class="ex">例：“根据我的简历生成 10 个可能的面试问题。”</div></div>
+      </div>
+      <div class="callout warn"><span class="icon">⚠️</span><div><strong>使用注意事项</strong><br>① LLM 可能出错，重要事实务必回到原文核实。② 受版权保护的资料不要超出教学和学习范围传播。③ 上传含个人信息的文件前应先匿名化。</div></div>
+    </section>
+
+    <section class="card" id="zh-extend">
+      <h2><span class="emoji">🚀</span>7. 进阶学习</h2>
+      <p>熟悉基本用法后，可以直接修改代码完成以下实验。每项练习通常需要一天到一周。</p>
+      <table>
+        <thead><tr><th>主题</th><th>可以尝试的改动</th><th>相关文件</th></tr></thead>
+        <tbody>
+          <tr><td>替换嵌入模型</td><td>将 E5 改为 <code>BAAI/bge-m3</code>，比较检索质量。</td><td><code>chatbot.py:EMBED_MODEL_NAME</code></td></tr>
+          <tr><td>混合检索</td><td>结合 BM25 关键词检索与嵌入语义检索。</td><td><code>chatbot.py:search_rag_per_doc</code></td></tr>
+          <tr><td>重排序</td><td>先取 Top-20，再使用 Cross-Encoder 重排为 Top-3。</td><td><code>chatbot.py</code></td></tr>
+          <tr><td>文本块大小实验</td><td>将 500 字改为 300、800 或 1200 字，测量质量变化。</td><td><code>chatbot.py:chunk_text</code></td></tr>
+          <tr><td>调整模式阈值</td><td>修改 <code>RAG_STRICT_SIM</code>，观察 grounded 模式触发频率。</td><td><code>chatbot.py</code></td></tr>
+          <tr><td>函数调用</td><td>接入天气 API、计算器等外部工具。</td><td><code>chatbot.py</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="zh-trouble">
+      <h2><span class="emoji">🩺</span>8. 常见问题</h2>
+      <table>
+        <thead><tr><th>现象</th><th>解决方法</th></tr></thead>
+        <tbody>
+          <tr><td><code>start.bat</code> 窗口一闪而过</td><td>打开命令提示符手动运行脚本查看错误；最常见原因是 Python 未加入 PATH。</td></tr>
+          <tr><td>找不到模型文件</td><td>确认 <code>models/</code> 中存在 GGUF 文件，并检查文件名是否符合预期。</td></tr>
+          <tr><td>回答速度很慢</td><td>① 启用 GPU 加速　② 使用 1.5B 等较小模型　③ 增加 <code>N_GPU_LAYERS</code>。</td></tr>
+          <tr><td>上传时出现 500 错误</td><td>通常是缺少 <code>sentence-transformers</code>；确认虚拟环境已激活且依赖已安装。</td></tr>
+          <tr><td>一直显示 fallback</td><td>资料可能与问题无关，或文本提取失败。换一种关键词提问，或重新上传资料。</td></tr>
+          <tr><td>韩文显示乱码</td><td>将命令提示符字体改为“Malgun Gothic（맑은 고딕）”。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout tip"><span class="icon">🔍</span><div><strong>诊断技巧</strong><br>出现问题时，在浏览器打开 <code>http://localhost:7861/status</code>，可查看模型状态、RAG 文本块数量和嵌入模型是否可用。</div></div>
+    </section>
+
+    <section class="card" id="zh-glossary">
+      <h2><span class="emoji">📖</span>9. 术语表</h2>
+      <p>下面整理了本项目以及 RAG/LLM 领域中的核心概念，可在阅读代码和 README 时查阅。</p>
+
+      <div class="glossary-group">🧠 A. LLM 基础</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">LLM <code>Large Language Model</code></div><div class="t-desc">拥有数十亿到数千亿参数的大语言模型，通常先在大规模文本上预训练，再进行指令微调，例如 GPT、Claude、Qwen。</div></div>
+        <div class="term"><div class="t-title">令牌 · 分词器</div><div class="t-desc">令牌是 LLM 处理文本的基本单位；分词器负责在字符串与令牌 ID 之间转换。不同语言的字符与令牌比例不同。</div></div>
+        <div class="term"><div class="t-title">上下文窗口 <code>n_ctx</code></div><div class="t-desc">模型一次能够“看到”的最大令牌数。Qwen3-8B 在本项目中使用 8192 个令牌，超出后较早内容可能被截断。</div></div>
+        <div class="term"><div class="t-title">幻觉</div><div class="t-desc">模型以可信语气编造错误事实的现象，例如引用不存在的论文。RAG 是降低幻觉的常用方法。</div></div>
+        <div class="term"><div class="t-title">提示词</div><div class="t-desc">发送给模型的完整输入，包括系统角色与规则、用户问题，以及 RAG 检索到的参考资料。</div></div>
+        <div class="term"><div class="t-title">微调 vs RAG</div><div class="t-desc">微调会重新训练模型权重，成本较高；RAG 保持模型不变，只注入外部知识。动态事实适合 RAG，固定风格和行为更适合微调。</div></div>
+      </div>
+
+      <div class="glossary-group">📦 B. 量化与 GGUF</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">GGUF</div><div class="t-desc"><strong>G</strong>GML <strong>U</strong>niversal <strong>F</strong>ormat。llama.cpp 使用的单文件模型格式，可同时包含权重、分词器和元数据。</div></div>
+        <div class="term"><div class="t-title">量化</div><div class="t-desc">把 float32 权重压缩为 4 位等低精度格式，显著降低内存需求并提升速度，但可能略微损失准确度。</div></div>
+        <div class="term"><div class="t-title">Q4_K_M · Q5_K_M · Q8_0</div><div class="t-desc">表示量化位宽和方案。Q4_K_M 在体积与质量之间较均衡；Q5_K_M 更大、质量更高；Q8_0 接近原始质量。</div></div>
+        <div class="term"><div class="t-title"><code>n_gpu_layers</code></div><div class="t-desc">指定卸载到 GPU 的模型层数。<code>-1</code> 表示全部，<code>0</code> 表示只使用 CPU；显存不足时应减小数值。</div></div>
+        <div class="term"><div class="t-title">bf16 · fp16 · fp32</div><div class="t-desc">不同的数值精度。fp32 精度最高且占用最大，fp16/bf16 使用 16 位；bf16 动态范围更宽，常用于现代 GPU。</div></div>
+      </div>
+
+      <div class="glossary-group">🔍 C. RAG 核心概念</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">RAG · 检索增强生成</div><div class="t-desc">先检索与问题相关的资料片段，再连同问题一起交给 LLM 生成答案，是注入外部知识的实用方法。</div></div>
+        <div class="term"><div class="t-title">分块 <code>chunk_text()</code></div><div class="t-desc">把长文档切成较小片段。本项目每块 500 字、重叠 80 字；过大会降低检索精度，过小会损失上下文。</div></div>
+        <div class="term"><div class="t-title">重叠（Overlap）</div><div class="t-desc">相邻文本块共同保留的字符数，可防止句子在边界处被切断，通常取块大小的 10%～20%。</div></div>
+        <div class="term"><div class="t-title">Top-K 检索</div><div class="t-desc">只把相似度最高的 K 个文本块交给 LLM。K 通常取 3～5；过多会引入噪声，过少可能漏掉信息。</div></div>
+        <div class="term"><div class="t-title">上下文注入</div><div class="t-desc">把检索片段写入系统提示词。本项目使用 <code>[资料 N · 文件名]</code>标注每个来源。</div></div>
+      </div>
+
+      <div class="glossary-group">🎯 D. 嵌入与相似度</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">嵌入（Embedding）</div><div class="t-desc">把文本转换为高维数字向量，例如 768 维。语义相近的文本在向量空间中通常距离更近。</div></div>
+        <div class="term"><div class="t-title">余弦相似度</div><div class="t-desc">两个向量夹角的余弦值，范围从 -1 到 1。对归一化向量可直接通过点积计算。</div><div class="t-note"><code>sim(q, d) = q_vec · d_vec</code></div></div>
+        <div class="term"><div class="t-title">归一化 <code>normalize_embeddings=True</code></div><div class="t-desc">将向量长度缩放为 1，使余弦相似度可以用快速点积计算。本项目在存储和查询时都会归一化。</div></div>
+        <div class="term"><div class="t-title">E5 <code>intfloat/multilingual-e5-base</code></div><div class="t-desc">本项目默认嵌入模型。查询需加 <code>query:</code> 前缀，文档需加 <code>passage:</code> 前缀，以匹配其训练方式。</div></div>
+        <div class="term"><div class="t-title">BGE-M3 <code>BAAI/bge-m3</code></div><div class="t-desc">可选升级模型，支持 Dense、Sparse 和 ColBERT，多语言、长文档与专业术语能力较强，但体积更大。</div></div>
+        <div class="term"><div class="t-title">Dense vs Sparse</div><div class="t-desc">稠密向量主要用于语义匹配；稀疏向量大部分维度为零，更接近关键词匹配。混合检索会同时使用两者。</div></div>
+      </div>
+
+      <div class="glossary-group">🔎 E. 检索算法</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">BM25</div><div class="t-desc">基于词频和逆文档频率的传统关键词检索算法，擅长匹配专有名词、数字和专业术语。</div></div>
+        <div class="term"><div class="t-title">TF-IDF</div><div class="t-desc">BM25 的前身，降低常见词权重、提高稀有词权重。本项目当前代码未实现 TF-IDF/BM25 回退检索。</div></div>
+        <div class="term"><div class="t-title">混合检索</div><div class="t-desc">对 BM25 关键词分数和嵌入语义分数进行加权组合，例如 <code>final = 0.3·BM25 + 0.7·cosine</code>。</div></div>
+        <div class="term"><div class="t-title">重排序（Reranking）</div><div class="t-desc">先快速召回 Top-20，再用 Cross-Encoder 精排为 Top-3。质量更高，但速度更慢。</div></div>
+        <div class="term"><div class="t-title">Cross-Encoder</div><div class="t-desc">同时输入查询和文档并直接判断相关度，通常比双塔嵌入更准确，但需要对每一对内容单独推理。</div></div>
+        <div class="term"><div class="t-title">ColBERT</div><div class="t-desc">在令牌级别比较查询与文档，而不是把整篇文档压缩成单个向量，因此能保留更多细节。</div></div>
+      </div>
+
+      <div class="glossary-group">⚙️ F. 模式与阈值</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title"><span class="badge grounded">📚</span> grounded 模式</div><div class="t-desc">基于上传资料回答，并用“资料 1”“资料 2”等标记引用，尽量减少幻觉。</div></div>
+        <div class="term"><div class="t-title"><span class="badge fallback">💭</span> fallback 模式</div><div class="t-desc">问题超出上传资料范围时，改用模型的通用知识回答，并明确提示资料范围外。</div></div>
+        <div class="term"><div class="t-title"><code>max(sim)</code></div><div class="t-desc">问题与所有文本块相似度中的最大值，用于判断资料是否包含足够相关的内容。</div></div>
+        <div class="term"><div class="t-title"><code>RAG_STRICT_SIM = 0.55</code></div><div class="t-desc">grounded 与 fallback 的切换阈值。调高更保守，调低则更容易采用资料回答。</div></div>
+        <div class="term"><div class="t-title"><code>RAG_MIN_SIM = 0.40</code></div><div class="t-desc">文本块进入上下文的最低相似度；低于此值的内容会被过滤以减少噪声。</div></div>
+        <div class="term"><div class="t-title"><code>k_per_doc</code></div><div class="t-desc">每份文档选取的 Top-K 数量，默认值为 3。增大可获得更多信息，但也会消耗更多令牌。</div></div>
+      </div>
+
+      <div class="glossary-group">🌐 G. 服务器、流式传输与推理后端</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">FastAPI</div><div class="t-desc">现代 Python 异步 Web 框架，可为 <code>/upload</code>、<code>/chat</code> 等端点自动生成 OpenAPI 文档，是本项目的后端框架。</div></div>
+        <div class="term"><div class="t-title">SSE · 服务器发送事件</div><div class="t-desc">基于 HTTP 的服务器到客户端单向流式传输。本项目用它逐步发送模型生成的令牌。</div></div>
+        <div class="term"><div class="t-title">令牌流式输出</div><div class="t-desc">无需等待完整回答生成完毕，模型每生成一小段就立即发送，使用户获得类似打字的实时反馈。</div></div>
+        <div class="term"><div class="t-title">llama-cpp-python</div><div class="t-desc">llama.cpp C++ 推理引擎的 Python 绑定，负责加载和运行 GGUF 模型。</div></div>
+        <div class="term"><div class="t-title">vLLM</div><div class="t-desc">针对 GPU 吞吐量优化的 LLM 服务框架，适合生产和大规模部署；本教学项目使用的是 llama.cpp。</div></div>
+        <div class="term"><div class="t-title">TensorRT-LLM</div><div class="t-desc">NVIDIA 的 LLM 推理加速引擎，可在特定 GPU 与模型组合上实现很高速度，但配置较复杂。</div></div>
+      </div>
+
+      <div class="glossary-group">🧰 H. 其他常用概念</div>
+      <div class="term-grid">
+        <div class="term"><div class="t-title">Temperature · top_p</div><div class="t-desc">控制生成随机性。<code>temperature=0</code> 更确定，较高值更有创造性；<code>top_p=0.9</code> 表示从累计概率最高的 90% 候选中采样。</div></div>
+        <div class="term"><div class="t-title">Function Calling · Tool Use</div><div class="t-desc">允许 LLM 请求调用外部函数，例如查询天气、使用计算器，再把结果整合到回答中。</div></div>
+        <div class="term"><div class="t-title">RLHF</div><div class="t-desc">基于人类反馈的强化学习。人类对回答进行偏好排序，模型再根据这些偏好进行训练。</div></div>
+        <div class="term"><div class="t-title">MTEB 基准</div><div class="t-desc">大规模文本嵌入评测基准，用于比较 E5、BGE 等嵌入模型在不同任务上的表现。</div></div>
+        <div class="term"><div class="t-title">Zero-shot · Few-shot</div><div class="t-desc">Zero-shot 不提供示例直接下达指令；Few-shot 先给出少量示例，适合要求严格输出格式的任务。</div></div>
+        <div class="term"><div class="t-title">Chain-of-Thought（CoT）</div><div class="t-desc">通过引导模型进行分步推理来提高复杂任务的表现。Qwen3 的 <code>/no_think</code> 可关闭额外思考以节省令牌。</div></div>
+        <div class="term"><div class="t-title">OpenAI SDK 兼容</div><div class="t-desc">许多本地服务器兼容 OpenAI Chat Completions API，因此可直接使用标准 <code>openai</code> Python 包访问。</div></div>
+        <div class="term"><div class="t-title">上下文注入风险</div><div class="t-desc">上传文件可能藏有“忽略所有指令”等恶意提示词，从而诱导模型改变行为。应只上传可信资料。</div></div>
+      </div>
+
+      <div class="callout tip"><span class="icon">📚</span><div><strong>进一步学习</strong><br>① <a href="https://huggingface.co/learn/nlp-course" target="_blank">HuggingFace NLP 课程</a>（免费）　② <a href="https://arxiv.org/abs/2005.11401" target="_blank">RAG 原始论文（Lewis 等，2020）</a>　③ <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank">MTEB 排行榜</a>。</div></div>
+    </section>
+
+    <footer>
+      <p>FICL Chatbot · 教学型开源项目 · GGUF LLM + 多文档 RAG</p>
+      <p style="margin-top:6px;">寻求帮助时，请同时提供控制台日志和 <code>/status</code> 的响应内容。</p>
+    </footer>
+  </div>
+
+  <header class="hero">
+    <h1>
+      <span class="ko-only">🤖 FICL Chatbot 사용설명서</span>
+      <span class="en-only">🤖 FICL Chatbot User Guide</span>
+    </h1>
+    <p>
+      <span class="ko-only">GGUF 로컬 LLM과 다중문서 RAG를 활용한 교육용 챗봇 — 설치부터 활용까지</span>
+      <span class="en-only">An educational chatbot powered by local GGUF LLM and multi-document RAG — from setup to practice</span>
+    </p>
+    <div class="meta">
+      <span>📚 <span class="ko-only">학생용 교재</span><span class="en-only">For Students</span></span>
+      <span>🧠 <span class="ko-only">RAG + LLM</span><span class="en-only">RAG + LLM</span></span>
+      <span>💻 <span class="ko-only">로컬 PC 실행</span><span class="en-only">Runs on Local PC</span></span>
+      <span>🆓 <span class="ko-only">오픈소스</span><span class="en-only">Open Source</span></span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h3>
+      <span class="ko-only">📑 목차</span>
+      <span class="en-only">📑 Table of Contents</span>
+    </h3>
+    <ol>
+      <li><span class="num">1</span><a href="#intro"><span class="ko-only">개요와 학습 목표</span><span class="en-only">Overview & Objectives</span></a></li>
+      <li><span class="num">2</span><a href="#install"><span class="ko-only">설치와 실행</span><span class="en-only">Installation & Launch</span></a></li>
+      <li><span class="num">3</span><a href="#basic"><span class="ko-only">기본 사용법</span><span class="en-only">Basic Usage</span></a></li>
+      <li><span class="num">4</span><a href="#rag"><span class="ko-only">RAG 작동 원리</span><span class="en-only">How RAG Works</span></a></li>
+      <li><span class="num">5</span><a href="#multi"><span class="ko-only">다중문서 RAG</span><span class="en-only">Multi-Doc RAG</span></a></li>
+      <li><span class="num">6</span><a href="#usecase"><span class="ko-only">활용 방안</span><span class="en-only">Use Cases</span></a></li>
+      <li><span class="num">7</span><a href="#extend"><span class="ko-only">학습 확장</span><span class="en-only">Learning Extensions</span></a></li>
+      <li><span class="num">8</span><a href="#trouble"><span class="ko-only">문제 해결</span><span class="en-only">Troubleshooting</span></a></li>
+      <li><span class="num">9</span><a href="#glossary"><span class="ko-only">용어 사전</span><span class="en-only">Glossary</span></a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. 개요 -->
+  <section class="card" id="intro">
+    <h2><span class="emoji">🎯</span>
+      <span class="ko-only">1. 개요와 학습 목표</span>
+      <span class="en-only">1. Overview & Learning Objectives</span>
+    </h2>
+
+    <div class="ko-only">
+      <p>FICL Chatbot은 <strong>GGUF 양자화된 LLM을 일반 PC에서 로컬로 실행</strong>하거나 서버에 등록된 API 모델을 사용하고, 업로드한 문서를 참고해 답변하는 <strong>RAG(Retrieval-Augmented Generation) 챗봇</strong>입니다. 로컬 모델을 선택하면 질문과 검색된 자료가 외부 모델 서비스로 전송되지 않습니다.</p>
+      <h3>🧭 이 챗봇으로 배울 수 있는 것</h3>
+      <ul>
+        <li><strong>GGUF 양자화 모델</strong>이 무엇인지, 어떻게 CPU/GPU에서 동작하는지</li>
+        <li><strong>RAG의 원리</strong> — 임베딩, 벡터 검색, 컨텍스트 주입</li>
+        <li><strong>프롬프트 엔지니어링</strong>의 실제 효과 (grounded vs fallback 모드 비교)</li>
+        <li><strong>FastAPI + SSE(Server-Sent Events)</strong> 기반 토큰 스트리밍</li>
+        <li>여러 문서를 동시에 참조하는 <strong>다중문서 RAG</strong> 설계 방식</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <p>FICL Chatbot runs a <strong>quantized GGUF LLM locally on your PC</strong> or uses an API model configured on the server, with uploaded documents as reference material — a <strong>RAG (Retrieval-Augmented Generation)</strong> chatbot. When you choose a local model, your question and retrieved document snippets stay off third-party model services.</p>
+      <h3>🧭 What you can learn</h3>
+      <ul>
+        <li>What <strong>GGUF quantized models</strong> are and how they run on CPU/GPU</li>
+        <li>The <strong>RAG pipeline</strong> — embeddings, vector search, context injection</li>
+        <li>Real impact of <strong>prompt engineering</strong> (grounded vs fallback mode)</li>
+        <li>Token-level streaming via <strong>FastAPI + SSE (Server-Sent Events)</strong></li>
+        <li>How <strong>multi-document RAG</strong> references several files simultaneously</li>
+      </ul>
+    </div>
+
+    <div class="callout tip">
+      <span class="icon">💡</span>
+      <div>
+        <strong class="ko-only">왜 로컬 LLM을 쓰나요?</strong>
+        <strong class="en-only">Why a local LLM?</strong>
+        <br>
+        <span class="ko-only">① 과제 자료가 외부로 유출되지 않음 ② API 비용 無 ③ 오프라인에서도 동작 ④ 내부 작동 원리를 직접 확인 가능</span>
+        <span class="en-only">① Your assignments stay private ② No API cost ③ Works offline ④ You can inspect every internal step.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 설치 -->
+  <section class="card" id="install">
+    <h2><span class="emoji">⚙️</span>
+      <span class="ko-only">2. 설치와 실행</span>
+      <span class="en-only">2. Installation & Launch</span>
+    </h2>
+
+    <h3 class="ko-only">📋 사전 준비</h3>
+    <h3 class="en-only">📋 Prerequisites</h3>
+    <ul>
+      <li><strong>Python 3.10+</strong> — <a href="https://www.python.org/downloads/" target="_blank">python.org</a> <span class="ko-only">(설치 시 "Add Python to PATH" 체크)</span><span class="en-only">(check "Add Python to PATH" during install)</span></li>
+      <li><strong><span class="ko-only">모델 준비</span><span class="en-only">Model source</span></strong> — <span class="ko-only">로컬 실행은 GGUF 파일(테스트: Qwen2.5-1.5B), API 실행은 서버 모델·키 설정 필요</span><span class="en-only">GGUF file for local inference (try Qwen2.5-1.5B), or server-side API model and key configuration</span></li>
+      <li><strong>RAM 8GB+</strong> <span class="ko-only">(큰 모델은 16GB+)</span><span class="en-only">(16GB+ for larger models)</span></li>
+    </ul>
+
+    <h3 class="ko-only">🚀 5분 설치</h3>
+    <h3 class="en-only">🚀 5-Minute Setup</h3>
+    <div class="step-grid">
+      <div class="step">
+        <span class="num">1</span>
+        <h4 class="ko-only">모델 준비</h4>
+        <h4 class="en-only">Prepare Model</h4>
+        <p class="ko-only">로컬: HuggingFace에서 GGUF를 받아 <code>models/</code>에 저장. API: README에 따라 서버에 모델·키를 등록.</p>
+        <p class="en-only">Local: put a GGUF download in <code>models/</code>. API: configure server-side models and keys as shown in README.</p>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <h4 class="ko-only">start.bat 더블클릭</h4>
+        <h4 class="en-only">Double-click start.bat</h4>
+        <p class="ko-only">첫 실행 시 자동으로 가상환경 생성 + 패키지 설치 (5~10분 소요). Linux/Mac은 <code>./start.sh</code>.</p>
+        <p class="en-only">First run auto-creates venv + installs deps (5~10 min). On Linux/Mac use <code>./start.sh</code>.</p>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <h4 class="ko-only">브라우저 접속</h4>
+        <h4 class="en-only">Open Browser</h4>
+        <p><code>http://localhost:7861</code></p>
+        <p class="ko-only">상단 드롭다운에서 로컬 또는 서버에 등록된 API 모델 선택.</p>
+        <p class="en-only">Choose a local or server-configured API model from the top dropdown.</p>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <h4 class="ko-only">자료 업로드 + 질문</h4>
+        <h4 class="en-only">Upload & Chat</h4>
+        <p class="ko-only">📁 버튼 → PDF/DOCX/XLSX/TXT 업로드 → 질문 입력!</p>
+        <p class="en-only">Click 📁 → upload PDF/DOCX/XLSX/TXT → ask away!</p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="icon">⚡</span>
+      <div>
+        <strong class="ko-only">GPU 가속 (선택)</strong>
+        <strong class="en-only">GPU Acceleration (optional)</strong>
+        <br>
+        <span class="ko-only">NVIDIA GPU가 있으면 응답 속도가 5~10배 빨라집니다. README의 "GPU 가속" 섹션 참고.</span>
+        <span class="en-only">With an NVIDIA GPU, responses are 5–10× faster. See the "GPU 가속" section in README.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 기본 사용법 -->
+  <section class="card" id="basic">
+    <h2><span class="emoji">💬</span>
+      <span class="ko-only">3. 기본 사용법</span>
+      <span class="en-only">3. Basic Usage</span>
+    </h2>
+
+    <h3 class="ko-only">🖥 UI 구성</h3>
+    <h3 class="en-only">🖥 UI Overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="ko-only">영역</th><th class="ko-only">역할</th>
+          <th class="en-only">Area</th><th class="en-only">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ko-only"><strong>상단 언어 선택</strong></td><td class="ko-only">中文 또는 한국어를 선택하면 UI와 이후 답변의 언어가 바뀝니다. 기존 대화는 자동 번역되지 않으며 선택은 브라우저에 저장됩니다.</td>
+          <td class="en-only"><strong>Language selector</strong></td><td class="en-only">Choose Chinese or Korean for the UI and future replies. Earlier messages are not translated; the choice is saved in the browser.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>상단 드롭다운</strong></td><td class="ko-only">로컬/API 모델 선택. API 모델은 연결 테스트 버튼으로 실제 인증을 확인할 수 있으며 소량의 요금이 발생할 수 있습니다.</td>
+          <td class="en-only"><strong>Top dropdown</strong></td><td class="en-only">Choose a local or API model. The API connection test makes a small billable request to check authentication.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>📁 파일 업로드</strong></td><td class="ko-only">파일당 20MB, 한 번에 최대 10개·총 50MB. 다른 이름은 추가, 같은 이름은 교체하고 인덱스를 영구 저장.</td>
+          <td class="en-only"><strong>📁 File Upload</strong></td><td class="en-only">20MB per file; up to 10 files and 50MB per batch. New names append, matching names replace, and the index is persisted.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>업로드 파일 목록</strong></td><td class="ko-only"><code>uploads/</code>의 원본 파일과 인덱스 자료를 표시하고 파일별로 삭제합니다.</td>
+          <td class="en-only"><strong>Uploaded files</strong></td><td class="en-only">Lists originals in <code>uploads/</code> and indexed documents; delete one file and its chunks.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>전체 자료 비우기</strong></td><td class="ko-only">모든 원본 파일과 인덱스를 영구 삭제합니다.</td>
+          <td class="en-only"><strong>Clear all files</strong></td><td class="en-only">Permanently deletes every uploaded original and the index.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>채팅 입력창</strong></td><td class="ko-only">Enter 전송, Shift+Enter 줄바꿈.</td>
+          <td class="en-only"><strong>Chat input</strong></td><td class="en-only">Enter to send, Shift+Enter for newline.</td>
+        </tr>
+        <tr>
+          <td class="ko-only"><strong>답변 아래 정보</strong></td><td class="ko-only">선택한 모델과 자료 기반/범위 밖 상태 표시.</td>
+          <td class="en-only"><strong>Answer details</strong></td><td class="en-only">Shows the selected model and grounded vs out-of-scope status.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <span class="icon">☁️</span>
+      <div>
+        <strong class="ko-only">API 모델 사용</strong>
+        <strong class="en-only">Using an API Model</strong>
+        <br>
+        <span class="ko-only">Git에서 제외되는 <code>api_models.json</code>에 API 주소, 모델 목록, 서비스별 <code>api_key</code>를 설정합니다. 서버는 이 값을 직접 읽으며 환경변수를 거치지 않습니다. 브라우저는 선택한 모델 ID만 전송하며 API Key를 받지 않습니다. 사용 가능 표시는 키가 설정되었다는 뜻일 뿐 인증 성공을 보장하지 않습니다.</span>
+        <span class="en-only">Keep API URLs, model lists, and each provider's <code>api_key</code> in the Git-ignored <code>api_models.json</code>. The server reads that field directly, without an environment-variable lookup. The browser receives only model IDs, never API keys. “Available” means configured, not authenticated.</span>
+      </div>
+    </div>
+    <div class="callout warn"><span class="icon">🔐</span><div>
+      <span class="ko-only">기본 서버는 로컬 PC에서만 열립니다. LAN으로 공개하려면 <code>APP_ACCESS_TOKEN</code>을 설정해야 합니다. 브라우저에서 토큰을 입력하며, 신뢰할 수 없는 네트워크에서는 HTTPS를 사용하세요.</span>
+      <span class="en-only">The server is local-only by default. To expose it on a LAN, set <code>APP_ACCESS_TOKEN</code>. Enter it in the browser, and use HTTPS on untrusted networks.</span>
+    </div></div>
+
+    <h3 class="ko-only">🏷 두 가지 응답 모드</h3>
+    <h3 class="en-only">🏷 Two Response Modes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="ko-only">뱃지</th><th class="ko-only">의미</th><th class="ko-only">언제 나타나나?</th>
+          <th class="en-only">Badge</th><th class="en-only">Meaning</th><th class="en-only">When?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge grounded">📚 자료 기반 · N건 참조</span></td>
+          <td class="ko-only">업로드 자료 안의 사실만 사용. 답변에 (자료 1)·(자료 2) 인용 표기.</td>
+          <td class="ko-only">질문이 업로드 자료와 밀접할 때 (유사도 ≥ 0.55)</td>
+          <td class="en-only">Answer uses only the facts from your uploaded files, with (자료 1)/(자료 2) citations.</td>
+          <td class="en-only">Question closely matches your docs (similarity ≥ 0.55)</td>
+        </tr>
+        <tr>
+          <td><span class="badge fallback">💭 자료 범위 밖 · 일반 지식</span></td>
+          <td class="ko-only">LLM이 보유한 일반 지식으로 답변. 서두에 "(업로드 자료 범위 밖)" 명시.</td>
+          <td class="ko-only">자료가 없거나, 질문이 자료와 거리가 멀 때</td>
+          <td class="en-only">Falls back to LLM general knowledge, prefixed with "(out of uploaded scope)".</td>
+          <td class="en-only">No docs, or question is far from your docs.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4. RAG 원리 -->
+  <section class="card" id="rag">
+    <h2><span class="emoji">🧠</span>
+      <span class="ko-only">4. RAG 작동 원리</span>
+      <span class="en-only">4. How RAG Works</span>
+    </h2>
+
+    <div class="ko-only">
+      <p><strong>RAG (Retrieval-Augmented Generation)</strong> = "검색" + "생성". LLM은 학습 당시에 본 지식만 압니다. 그래서 여러분의 PDF·DOCX처럼 모델이 모르는 내용을 질문하면 환각(hallucination)을 일으키기 쉽습니다. RAG는 질문과 관련된 부분을 자료에서 미리 찾아 LLM에 함께 넣어줘서 이 문제를 해결합니다.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>RAG (Retrieval-Augmented Generation)</strong> = "retrieve" + "generate". An LLM only knows what it saw during training, so when you ask about your own PDFs or Excel sheets, it tends to hallucinate. RAG fixes this by searching your documents first and injecting the relevant snippets into the LLM prompt.</p>
+    </div>
+
+    <h3 class="ko-only">📥 자료 업로드 흐름</h3>
+    <h3 class="en-only">📥 Upload Pipeline</h3>
+    <div class="flow">
+      <span class="step-label">PDF/DOCX/XLSX</span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">텍스트 추출</span><span class="en-only">text extract</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">500자 청크 분할</span><span class="en-only">500-char chunks</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">임베딩 (768차원 벡터)</span><span class="en-only">embed (768-dim)</span></span> <span class="arrow">→</span>
+      <span class="step-label"><code>rag_index/</code> <span class="ko-only">영구 저장</span><span class="en-only">persisted</span></span>
+    </div>
+
+    <h3 class="ko-only">🔎 질문 처리 흐름</h3>
+    <h3 class="en-only">🔎 Query Pipeline</h3>
+    <div class="flow">
+      <span class="step-label"><span class="ko-only">사용자 질문</span><span class="en-only">User query</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">질문 임베딩</span><span class="en-only">query embedding</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">코사인 유사도 top-K</span><span class="en-only">cosine top-K</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">모드 판정</span><span class="en-only">mode decision</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">프롬프트 조립</span><span class="en-only">prompt build</span></span> <span class="arrow">→</span>
+      <span class="step-label"><span class="ko-only">LLM 스트리밍</span><span class="en-only">LLM streaming</span></span>
+    </div>
+
+    <h3 class="ko-only">📐 핵심 수식</h3>
+    <h3 class="en-only">📐 Core Math</h3>
+    <div class="ko-only">
+      <p>정규화된 벡터의 내적 = 코사인 유사도. 임베딩이 서로 유사하면 1에 가깝고, 전혀 관련 없으면 0에 가깝습니다.</p>
+    </div>
+    <div class="en-only">
+      <p>Dot product of normalized vectors = cosine similarity. Close to 1 means highly related, close to 0 means unrelated.</p>
+    </div>
+<pre><code>sim(q, d) = q_vec · d_vec        # <span class="ko-only">정규화된 벡터</span><span class="en-only">normalized vectors</span>
+mode = "grounded"  if max(sim) ≥ 0.55
+mode = "fallback"  otherwise</code></pre>
+  </section>
+
+  <!-- 5. 다중문서 RAG -->
+  <section class="card" id="multi">
+    <h2><span class="emoji">📚</span>
+      <span class="ko-only">5. 다중문서 RAG — 핵심 차별점</span>
+      <span class="en-only">5. Multi-Document RAG — The Key Feature</span>
+    </h2>
+
+    <div class="ko-only">
+      <p>일반적인 RAG는 모든 청크 중에서 "전역 top-K"를 뽑습니다. 문제는 특정 파일 하나가 다른 파일보다 유사도가 높으면 결과를 독식해버린다는 점. FICL Chatbot은 <strong>각 업로드 파일마다 자체 top-K</strong>를 뽑아서, 서로 다른 문서를 공평하게 참조합니다.</p>
+    </div>
+    <div class="en-only">
+      <p>Vanilla RAG picks a global top-K across all chunks — one dominant file can starve the others. FICL Chatbot selects <strong>a per-file top-K</strong>, so every uploaded document gets its fair share of the context window.</p>
+    </div>
+
+    <h3 class="ko-only">🆚 비교</h3>
+    <h3 class="en-only">🆚 Comparison</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="ko-only">방식</th><th class="ko-only">장점</th><th class="ko-only">단점</th>
+          <th class="en-only">Method</th><th class="en-only">Pros</th><th class="en-only">Cons</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ko-only"><strong>전역 top-K</strong></td>
+          <td class="ko-only">단순, 빠름</td>
+          <td class="ko-only">한 문서가 결과 독식 → 다른 문서 참조 불가</td>
+          <td class="en-only"><strong>Global top-K</strong></td>
+          <td class="en-only">Simple, fast</td>
+          <td class="en-only">One doc can hog results → others ignored</td>
+        </tr>
+        <tr style="background:#f0f9ff;">
+          <td class="ko-only"><strong>문서별 top-K ✓</strong></td>
+          <td class="ko-only">여러 문서를 공평하게 참조. 자료 간 비교·종합 가능</td>
+          <td class="ko-only">약간 더 많은 토큰 사용</td>
+          <td class="en-only"><strong>Per-doc top-K ✓</strong></td>
+          <td class="en-only">Fair reference across docs; enables cross-doc comparison</td>
+          <td class="en-only">Slightly more tokens</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="ko-only">📎 예시: 3개 파일 업로드 상태에서 질문</h3>
+    <h3 class="en-only">📎 Example: Query with 3 files uploaded</h3>
+<pre><code><span class="ko-only"># 업로드한 자료</span><span class="en-only"># Uploaded files</span>
+- lecture_notes.pdf       <span class="ko-only">(강의 노트)</span><span class="en-only">(lecture notes)</span>
+- textbook_ch3.pdf        <span class="ko-only">(교재 3장)</span><span class="en-only">(textbook ch3)</span>
+- lab_results.xlsx        <span class="ko-only">(실험 결과)</span><span class="en-only">(lab results)</span>
+
+<span class="ko-only"># 질문</span><span class="en-only"># Query</span>
+"<span class="ko-only">실험 결과가 교재 이론과 어떻게 다른지 분석해줘</span><span class="en-only">Compare the lab results against the textbook theory</span>"
+
+<span class="ko-only"># LLM이 받는 컨텍스트 (각 파일에서 top-3)</span><span class="en-only"># Context delivered to the LLM (top-3 from each)</span>
+[자료 1 · textbook_ch3.pdf]
+  ...<span class="ko-only">이론 설명</span><span class="en-only">theoretical description</span>...
+[자료 2 · lab_results.xlsx]
+  ...<span class="ko-only">측정값 표</span><span class="en-only">measurement table</span>...
+[자료 3 · lecture_notes.pdf]
+  ...<span class="ko-only">보완 설명</span><span class="en-only">supplementary notes</span>...</code></pre>
+
+    <div class="ko-only">
+      <p>LLM은 세 자료를 각각 참조하면서 "(자료 1)과 (자료 2)의 수치는 ~ 다르다" 식으로 명확한 인용을 넣어 답변합니다. 자료 끼리 상충하는 부분도 짚어줍니다.</p>
+    </div>
+    <div class="en-only">
+      <p>The LLM cites each source — e.g., "The values in (자료 1) differ from (자료 2) by ..." — and flags any contradictions between them.</p>
+    </div>
+  </section>
+
+  <!-- 6. 활용 방안 -->
+  <section class="card" id="usecase">
+    <h2><span class="emoji">🎓</span>
+      <span class="ko-only">6. 활용 방안 — 수업·과제에서 어떻게 쓰나?</span>
+      <span class="en-only">6. Use Cases — How to Apply in Class</span>
+    </h2>
+
+    <div class="usecase">
+      <div class="card-small">
+        <h4>📖 <span class="ko-only">강의 자료 종합 비서</span><span class="en-only">Lecture Study Buddy</span></h4>
+        <p class="ko-only">여러 강의의 PDF 노트를 모두 업로드. 시험 준비 시 특정 개념이 서로 다른 강의에서 어떻게 다뤄졌는지 비교 질문.</p>
+        <p class="en-only">Upload PDF notes from several lectures. At exam time, ask how one concept appears across different lectures.</p>
+        <div class="ex ko-only">예: "확률분포가 통계 강의와 기계학습 강의에서 각각 어떻게 설명됐어?"</div>
+        <div class="ex en-only">Ex: "How was probability distribution explained in both statistics and ML lectures?"</div>
+      </div>
+
+      <div class="card-small">
+        <h4>🔬 <span class="ko-only">논문 리뷰 요약</span><span class="en-only">Paper Review Summarizer</span></h4>
+        <p class="ko-only">여러 관련 논문의 PDF를 함께 업로드. 핵심 주장·방법론·한계점을 자료별로 비교 추출.</p>
+        <p class="en-only">Upload several related papers and extract claims / methods / limitations per paper.</p>
+        <div class="ex ko-only">예: "세 논문이 제시한 평가 방법의 차이점을 각각 정리해줘"</div>
+        <div class="ex en-only">Ex: "Summarize how the three papers differ in evaluation methodology."</div>
+      </div>
+
+      <div class="card-small">
+        <h4>📊 <span class="ko-only">실험 데이터 분석</span><span class="en-only">Experiment Data Analysis</span></h4>
+        <p class="ko-only">실험 결과 Excel + 이론 교재 PDF를 함께 업로드. 수치와 이론의 괴리 분석.</p>
+        <p class="en-only">Upload experimental Excel + theory PDF to spot deviations between measurement and theory.</p>
+        <div class="ex ko-only">예: "측정값이 이론 예측과 얼마나 차이 나는지 분석"</div>
+        <div class="ex en-only">Ex: "By how much do measured values deviate from predicted?"</div>
+      </div>
+
+      <div class="card-small">
+        <h4>📝 <span class="ko-only">보고서·과제 작성 도우미</span><span class="en-only">Report Writing Assistant</span></h4>
+        <p class="ko-only">참고 자료를 업로드해두면 사실관계를 즉시 확인하며 글을 쓸 수 있음. 환각 방지.</p>
+        <p class="en-only">Upload references and verify facts on the fly while writing — avoid hallucinations.</p>
+        <div class="ex ko-only">예: "이 자료에 따르면 2023년 매출 수치는?"</div>
+        <div class="ex en-only">Ex: "What was the 2023 revenue figure per this document?"</div>
+      </div>
+
+      <div class="card-small">
+        <h4>👥 <span class="ko-only">조별 과제 공용 지식베이스</span><span class="en-only">Team Knowledge Base</span></h4>
+        <p class="ko-only">조원들의 리서치 자료를 모아 공유 챗봇으로. 각 조원이 다른 조원의 자료도 즉시 활용 가능.</p>
+        <p class="en-only">Pool everyone's research into one shared chatbot — any teammate can tap into any teammate's docs.</p>
+        <div class="ex ko-only">예: 7861 포트를 LAN에 공개 → 같은 네트워크의 조원 접속</div>
+        <div class="ex en-only">Ex: Expose port 7861 on LAN so teammates on the same network can join.</div>
+      </div>
+
+      <div class="card-small">
+        <h4>🧪 <span class="ko-only">AI 모델 비교 실습</span><span class="en-only">LLM A/B Testing</span></h4>
+        <p class="ko-only">같은 질문을 Qwen2.5-1.5B / EXAONE / Qwen3-8B에 각각 던져 품질과 속도 비교.</p>
+        <p class="en-only">Ask the same question to Qwen2.5-1.5B / EXAONE / Qwen3-8B to compare quality and speed.</p>
+        <div class="ex ko-only">예: 작은 모델은 왜 더 빠르지만 품질은 왜 떨어지는가?</div>
+        <div class="ex en-only">Ex: Why are smaller models faster but less accurate?</div>
+      </div>
+
+      <div class="card-small">
+        <h4>🏢 <span class="ko-only">기관 매뉴얼 응답 봇</span><span class="en-only">Institutional FAQ Bot</span></h4>
+        <p class="ko-only">학과 규정집·시간표·안내 매뉴얼을 모두 업로드 → 신입생에게 Q&A 봇으로 제공.</p>
+        <p class="en-only">Upload department rules / schedules / handbooks → serve as a Q&A bot for freshmen.</p>
+        <div class="ex ko-only">예: "졸업 요건은 몇 학점이야?" "휴학 신청 절차는?"</div>
+        <div class="ex en-only">Ex: "How many credits do I need to graduate?" "How do I apply for leave?"</div>
+      </div>
+
+      <div class="card-small">
+        <h4>💼 <span class="ko-only">면접 준비 롤플레이</span><span class="en-only">Interview Prep Role-play</span></h4>
+        <p class="ko-only">자소서·회사 소개자료를 업로드 → 모의 면접 질문 생성 요청.</p>
+        <p class="en-only">Upload your resume + company profile → ask for mock interview questions.</p>
+        <div class="ex ko-only">예: "내 자소서를 기반으로 예상 면접 질문 10개 만들어줘"</div>
+        <div class="ex en-only">Ex: "Generate 10 likely interview questions based on my resume."</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="icon">⚠️</span>
+      <div>
+        <strong class="ko-only">사용 시 주의</strong>
+        <strong class="en-only">Important Caveats</strong>
+        <br>
+        <span class="ko-only">① LLM은 틀릴 수 있음 — 중요한 사실은 반드시 원본 재확인 ② 저작권 있는 자료는 수업·학습 범위를 벗어나 공유 금지 ③ 개인정보 포함 파일은 업로드 전 익명화</span>
+        <span class="en-only">① LLMs can be wrong — always verify important facts against the source ② Don't share copyrighted material beyond classroom use ③ Anonymize files containing personal data before upload</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 학습 확장 -->
+  <section class="card" id="extend">
+    <h2><span class="emoji">🚀</span>
+      <span class="ko-only">7. 학습 확장 (심화)</span>
+      <span class="en-only">7. Learning Extensions (Advanced)</span>
+    </h2>
+
+    <div class="ko-only">
+      <p>기본 사용에 익숙해졌다면 코드를 직접 수정하며 다음을 실험해 보세요. 각 과제는 하루~일주일 분량.</p>
+    </div>
+    <div class="en-only">
+      <p>Once comfortable, modify the code to experiment with the ideas below. Each takes anywhere from a day to a week.</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="ko-only">주제</th><th class="ko-only">무엇을 바꿔보나</th><th class="ko-only">관련 파일</th>
+          <th class="en-only">Topic</th><th class="en-only">What to try</th><th class="en-only">File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ko-only">임베딩 모델 교체</td>
+          <td class="ko-only">E5 → <code>BAAI/bge-m3</code>로 바꿔 검색 품질 비교</td>
+          <td><code>chatbot.py:EMBED_MODEL_NAME</code></td>
+          <td class="en-only">Swap embedding model</td>
+          <td class="en-only">E5 → <code>BAAI/bge-m3</code> and compare search quality</td>
+        </tr>
+        <tr>
+          <td class="ko-only">하이브리드 검색</td>
+          <td class="ko-only">BM25(키워드) + 임베딩(의미) 결합</td>
+          <td><code>chatbot.py:search_rag_per_doc</code></td>
+          <td class="en-only">Hybrid search</td>
+          <td class="en-only">Combine BM25 (keyword) + embedding (semantic)</td>
+        </tr>
+        <tr>
+          <td class="ko-only">재순위 (reranking)</td>
+          <td class="ko-only">1차 top-20을 cross-encoder로 top-3 재정렬</td>
+          <td><code>chatbot.py</code></td>
+          <td class="en-only">Reranking</td>
+          <td class="en-only">Re-rank initial top-20 to top-3 with a cross-encoder</td>
+        </tr>
+        <tr>
+          <td class="ko-only">청크 크기 실험</td>
+          <td class="ko-only">500자 → 300/800/1200자로 바꿔 품질 변화 측정</td>
+          <td><code>chatbot.py:chunk_text</code></td>
+          <td class="en-only">Chunk size experiment</td>
+          <td class="en-only">500 → 300/800/1200 chars and measure quality</td>
+        </tr>
+        <tr>
+          <td class="ko-only">모드 임계값 튜닝</td>
+          <td class="ko-only">RAG_STRICT_SIM 값을 조정해 grounded 호출 빈도 조절</td>
+          <td><code>chatbot.py</code></td>
+          <td class="en-only">Mode threshold tuning</td>
+          <td class="en-only">Adjust RAG_STRICT_SIM to shift grounded trigger rate</td>
+        </tr>
+        <tr>
+          <td class="ko-only">함수 호출 (Function Calling)</td>
+          <td class="ko-only">날씨 API, 수식 계산기 등 외부 도구 연결</td>
+          <td><code>chatbot.py</code></td>
+          <td class="en-only">Function calling</td>
+          <td class="en-only">Hook up weather API, calculator, etc.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 8. 문제 해결 -->
+  <section class="card" id="trouble">
+    <h2><span class="emoji">🩺</span>
+      <span class="ko-only">8. 자주 겪는 문제</span>
+      <span class="en-only">8. Common Issues</span>
+    </h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="ko-only">증상</th><th class="ko-only">해결</th>
+          <th class="en-only">Symptom</th><th class="en-only">Fix</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ko-only"><code>start.bat</code> 창이 깜빡 꺼짐</td>
+          <td class="ko-only">cmd 열어 수동 실행 → 오류 메시지 확인. 대부분 Python PATH 누락.</td>
+          <td class="en-only"><code>start.bat</code> flashes closed</td>
+          <td class="en-only">Open cmd and run manually to see the error — usually Python PATH issue.</td>
+        </tr>
+        <tr>
+          <td class="ko-only">모델 파일을 찾을 수 없음</td>
+          <td class="ko-only"><code>models/</code>에 GGUF 있는지 + 파일명 일치 확인</td>
+          <td class="en-only">"Model file not found"</td>
+          <td class="en-only">Verify <code>models/</code> has GGUF with the exact expected filename</td>
+        </tr>
+        <tr>
+          <td class="ko-only">응답이 너무 느림</td>
+          <td class="ko-only">① GPU 가속 설정 ② 더 작은 모델 (1.5B 등) ③ GPU 레이어 수 늘리기</td>
+          <td class="en-only">Response is very slow</td>
+          <td class="en-only">① Enable GPU ② Use smaller model (1.5B) ③ Increase <code>N_GPU_LAYERS</code></td>
+        </tr>
+        <tr>
+          <td class="ko-only">업로드 500 Internal Server Error</td>
+          <td class="ko-only"><code>sentence-transformers</code> 미설치 — 가상환경 활성화 확인</td>
+          <td class="en-only">Upload 500 error</td>
+          <td class="en-only"><code>sentence-transformers</code> missing — ensure venv is active</td>
+        </tr>
+        <tr>
+          <td class="ko-only">RAG 뱃지가 fallback만 나옴</td>
+          <td class="ko-only">자료가 질문과 거리가 멀거나 추출이 실패. 다른 키워드로 질문 or 자료 재업로드</td>
+          <td class="en-only">Only fallback badge appears</td>
+          <td class="en-only">Query too far from docs, or extraction failed — rephrase or re-upload</td>
+        </tr>
+        <tr>
+          <td class="ko-only">한글이 깨져 보임</td>
+          <td class="ko-only">cmd 창 글꼴을 "맑은 고딕"으로 변경 (제목바 우클릭 → 속성 → 글꼴)</td>
+          <td class="en-only">Korean text shows as mojibake</td>
+          <td class="en-only">Change cmd font to Malgun Gothic (right-click titlebar → Properties → Font)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <span class="icon">🔍</span>
+      <div>
+        <strong class="ko-only">진단 요령</strong>
+        <strong class="en-only">Diagnostic Tip</strong>
+        <br>
+        <span class="ko-only">문제 발생 시 <code>http://localhost:7861/status</code>를 브라우저로 열면 모델 상태·RAG 청크 수·임베더 사용 가능 여부를 바로 확인할 수 있습니다.</span>
+        <span class="en-only">Open <code>http://localhost:7861/status</code> in your browser to instantly see model state, RAG chunk count, and embedder availability.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. 용어 사전 -->
+  <section class="card" id="glossary">
+    <h2><span class="emoji">📖</span>
+      <span class="ko-only">9. 용어 사전 (Glossary)</span>
+      <span class="en-only">9. Glossary</span>
+    </h2>
+
+    <div class="ko-only">
+      <p>이 챗봇과 RAG·LLM 전반에 등장하는 핵심 용어 정리. 코드와 README를 읽을 때 참고하세요.</p>
+    </div>
+    <div class="en-only">
+      <p>Reference for all key terms used in this chatbot and the broader RAG/LLM ecosystem. Keep this handy while reading the code and README.</p>
+    </div>
+
+    <!-- 그룹 A: LLM 기초 -->
+    <div class="glossary-group">
+      <span class="ko-only">🧠 A. LLM 기초</span>
+      <span class="en-only">🧠 A. LLM Fundamentals</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">LLM <code>Large Language Model</code></div>
+        <div class="t-desc">
+          <span class="ko-only">수십억~수천억 개의 파라미터를 가진 대규모 언어 모델. 인터넷 텍스트로 사전학습 → 명령 지시(Instruction) 추가 학습. GPT-4, Claude, Qwen 등.</span>
+          <span class="en-only">Massive language models with billions of parameters, pretrained on web text and instruction-tuned. GPT-4, Claude, Qwen, etc.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">토큰</span><span class="en-only">Token</span> · <span class="ko-only">토크나이저</span><span class="en-only">Tokenizer</span></div>
+        <div class="t-desc">
+          <span class="ko-only">LLM이 다루는 최소 단위. 영어는 보통 1단어 ≈ 1토큰, 한국어는 1글자 ≈ 1~2토큰. "안녕하세요" ≈ 4토큰. 토크나이저가 문자열 ↔ 토큰 ID 변환.</span>
+          <span class="en-only">The atomic unit an LLM processes. English ≈ 1 word/token; Korean ≈ 1~2 tokens per char. "Hello" ≈ 1 token. Tokenizer converts text ↔ token IDs.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">컨텍스트 길이</span><span class="en-only">Context Window</span> <code>n_ctx</code></div>
+        <div class="t-desc">
+          <span class="ko-only">모델이 한 번에 "기억"할 수 있는 토큰 수. Qwen3-8B는 8192토큰(≈ A4 10장). 초과하면 앞부분이 잘림.</span>
+          <span class="en-only">Max tokens the model can "see" at once. Qwen3-8B = 8192 tokens (~10 pages). Overflow truncates older content.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">환각</span><span class="en-only">Hallucination</span></div>
+        <div class="t-desc">
+          <span class="ko-only">LLM이 사실이 아닌 걸 그럴듯하게 지어내는 현상. "존재하지 않는 논문 인용" 같은 것. RAG는 이걸 줄이기 위한 대표적 방법.</span>
+          <span class="en-only">When an LLM confidently fabricates plausible-sounding falsehoods (e.g., fake citations). RAG is a primary mitigation.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">프롬프트</span><span class="en-only">Prompt</span></div>
+        <div class="t-desc">
+          <span class="ko-only">LLM에게 주는 입력 전체. 시스템 프롬프트(역할·규칙) + 사용자 질문 + (RAG일 땐) 참고 자료.</span>
+          <span class="en-only">The full input to the LLM: system prompt (role/rules) + user query + (if RAG) retrieved context.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">파인튜닝</span><span class="en-only">Fine-tuning</span> vs RAG</div>
+        <div class="t-desc">
+          <span class="ko-only">파인튜닝은 모델 가중치를 다시 학습 (비용·시간 큼). RAG는 모델 그대로 두고 외부 지식만 주입 (빠르고 저렴). 변하는 지식 = RAG, 고정된 스타일 = 파인튜닝.</span>
+          <span class="en-only">Fine-tuning retrains model weights (costly). RAG keeps the model fixed and injects external knowledge (fast, cheap). Dynamic facts → RAG; fixed style → fine-tune.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 B: 양자화 & GGUF -->
+    <div class="glossary-group">
+      <span class="ko-only">📦 B. 양자화 · GGUF 모델</span>
+      <span class="en-only">📦 B. Quantization & GGUF</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">GGUF</div>
+        <div class="t-desc">
+          <span class="ko-only"><strong>G</strong>GML <strong>U</strong>niversal <strong>F</strong>ormat. llama.cpp에서 쓰는 양자화 LLM 파일 포맷. 한 파일에 가중치·토크나이저·메타데이터 모두 포함.</span>
+          <span class="en-only"><strong>G</strong>GML <strong>U</strong>niversal <strong>F</strong>ormat — a single-file format from llama.cpp bundling weights, tokenizer, and metadata.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">양자화</span><span class="en-only">Quantization</span></div>
+        <div class="t-desc">
+          <span class="ko-only">가중치를 32비트(float32) → 4비트로 압축해 메모리 1/8, 속도 ↑. 정확도 약간 손실. 큰 모델을 일반 PC에서 돌리는 핵심 기술.</span>
+          <span class="en-only">Compress weights from float32 → 4-bit, cutting memory 8× and boosting speed with slight accuracy loss. Essential for running large models on consumer PCs.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Q4_K_M · Q5_K_M · Q8_0</div>
+        <div class="t-desc">
+          <span class="ko-only">양자화 비트 수와 방식. <code>Q4_K_M</code>(4bit, medium quality) = 균형. <code>Q5_K_M</code> = 품질 ↑ 크기 ↑. <code>Q8_0</code> = 거의 원본 품질.</span>
+          <span class="en-only">Quantization bit-width + scheme. <code>Q4_K_M</code> (4-bit, medium) is balanced. <code>Q5_K_M</code> = higher quality, bigger. <code>Q8_0</code> ≈ near-original.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><code>n_gpu_layers</code></div>
+        <div class="t-desc">
+          <span class="ko-only">모델 레이어 중 몇 개를 GPU에 올릴지. <code>-1</code>=전체, <code>0</code>=CPU만. VRAM 부족 시 숫자 줄임. 24GB GPU면 보통 -1.</span>
+          <span class="en-only">How many layers to offload to GPU. <code>-1</code>=all, <code>0</code>=CPU only. Lower if VRAM is tight. 24GB GPUs usually run -1.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">bf16 · fp16 · fp32</div>
+        <div class="t-desc">
+          <span class="ko-only">숫자 정밀도. fp32(32비트) 원본 → fp16/bf16(16비트)로 반 토막 → 4비트 양자화로 추가 축소. bf16은 범위 넓고 품질 안정 → 최신 GPU 기본값.</span>
+          <span class="en-only">Numeric precision. fp32 original → fp16/bf16 (half) → 4-bit quantization (further). bf16 has wider range → default on modern GPUs.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 C: RAG 핵심 -->
+    <div class="glossary-group">
+      <span class="ko-only">🔍 C. RAG 핵심 개념</span>
+      <span class="en-only">🔍 C. Core RAG Concepts</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">RAG <span class="ko-only">· 검색 증강 생성</span></div>
+        <div class="t-desc">
+          <span class="ko-only"><strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration. 질문과 관련된 자료를 먼저 "검색"해 LLM에 함께 넣어 "생성". 외부 지식을 모델에 주입하는 가장 실용적 방법.</span>
+          <span class="en-only"><strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration. Retrieve relevant chunks first, then feed them to the LLM. The most practical way to inject external knowledge.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">청킹</span><span class="en-only">Chunking</span> <code>chunk_text()</code></div>
+        <div class="t-desc">
+          <span class="ko-only">긴 문서를 작은 조각(청크)으로 자르는 작업. 이 챗봇은 500자/청크, 80자 overlap. 청크가 너무 크면 검색 정밀도 ↓, 너무 작으면 맥락 ↓.</span>
+          <span class="en-only">Split long docs into small pieces. Here: 500 chars/chunk with 80-char overlap. Too big = poor retrieval; too small = loss of context.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">오버랩</span><span class="en-only">Overlap</span></div>
+        <div class="t-desc">
+          <span class="ko-only">인접 청크 간 겹치는 글자 수. 문장이 청크 경계에서 잘려 의미 손실되는 걸 방지. 보통 청크 크기의 10~20%.</span>
+          <span class="en-only">Characters shared between adjacent chunks — prevents sentences from being severed at boundaries. Typically 10–20% of chunk size.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Top-K <span class="ko-only">검색</span><span class="en-only">retrieval</span></div>
+        <div class="t-desc">
+          <span class="ko-only">유사도 상위 K개 청크만 LLM에 전달. K=3~5가 일반적. 많이 넣으면 노이즈, 적게 넣으면 정보 부족.</span>
+          <span class="en-only">Pass only the top-K most-similar chunks to the LLM. K=3–5 is typical. Too many = noise; too few = missing info.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">컨텍스트 주입</span><span class="en-only">Context Injection</span></div>
+        <div class="t-desc">
+          <span class="ko-only">검색된 청크를 시스템 프롬프트 안에 "[참고 자료]..." 형태로 넣는 과정. 이 챗봇은 <code>[자료 N · 파일명]</code>으로 라벨링.</span>
+          <span class="en-only">Embedding retrieved chunks inside the system prompt as "[참고 자료]...". This chatbot labels each as <code>[자료 N · filename]</code>.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 D: 임베딩 & 유사도 -->
+    <div class="glossary-group">
+      <span class="ko-only">🎯 D. 임베딩과 유사도</span>
+      <span class="en-only">🎯 D. Embeddings & Similarity</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title"><span class="ko-only">임베딩</span><span class="en-only">Embedding</span></div>
+        <div class="t-desc">
+          <span class="ko-only">텍스트를 고차원 숫자 벡터(예: 768차원)로 변환한 것. 의미가 비슷하면 벡터도 가깝다. "강아지" ≈ "개", "강아지" ≠ "자동차".</span>
+          <span class="en-only">Converting text into a high-dim vector (e.g., 768-D). Similar meanings → nearby vectors. "dog" ≈ "puppy", "dog" ≠ "car".</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">코사인 유사도</span><span class="en-only">Cosine Similarity</span></div>
+        <div class="t-desc">
+          <span class="ko-only">두 벡터가 이루는 각도의 코사인. 1(동일) ~ 0(무관) ~ -1(반대). 정규화된 벡터면 단순 내적(dot product)으로 계산 가능.</span>
+          <span class="en-only">Cosine of the angle between two vectors. 1 (same) → 0 (unrelated) → -1 (opposite). For normalized vectors, equals a simple dot product.</span>
+        </div>
+        <div class="t-note">
+          <code>sim(q, d) = q_vec · d_vec</code>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">정규화</span><span class="en-only">Normalization</span> <code>normalize_embeddings=True</code></div>
+        <div class="t-desc">
+          <span class="ko-only">벡터 길이를 1로 만듦. 코사인 유사도 계산을 내적만으로 빠르게 처리 가능. 이 챗봇은 저장·검색 때 모두 정규화.</span>
+          <span class="en-only">Scale vectors to length 1 so cosine similarity reduces to a dot product. This chatbot normalizes on both store and query.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">E5 <code>intfloat/multilingual-e5-base</code></div>
+        <div class="t-desc">
+          <span class="ko-only">이 챗봇의 기본 임베딩 모델(약 280MB). 쿼리에 <code>query:</code>, 문서에 <code>passage:</code> 프리픽스 필수 (학습 때 그렇게 썼기 때문).</span>
+          <span class="en-only">Default embedder (~280MB). Needs <code>query:</code> prefix for queries and <code>passage:</code> for documents (as trained).</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">BGE-M3 <code>BAAI/bge-m3</code></div>
+        <div class="t-desc">
+          <span class="ko-only">업그레이드 후보 임베더(약 2.2GB). Dense·Sparse·ColBERT 다중 벡터 지원. 긴 문서(8K 토큰), 전문용어에 강함. E5보다 10~20% 정확.</span>
+          <span class="en-only">Upgrade candidate (~2.2GB). Supports dense + sparse + ColBERT. Handles 8K-token docs; 10–20% stronger than E5 on technical content.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Dense vs Sparse <span class="ko-only">(조밀 vs 희소 벡터)</span></div>
+        <div class="t-desc">
+          <span class="ko-only">Dense = 모든 차원이 숫자(768차원 전부 사용 · 의미 매칭). Sparse = 대부분 0 (어휘 매칭 · BM25 계열). 하이브리드는 둘 다 사용.</span>
+          <span class="en-only">Dense = all dims filled (768-D, semantic match). Sparse = mostly zero (lexical match, BM25-like). Hybrid uses both.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 E: 검색 알고리즘 -->
+    <div class="glossary-group">
+      <span class="ko-only">🔎 E. 검색 알고리즘</span>
+      <span class="en-only">🔎 E. Retrieval Algorithms</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">BM25</div>
+        <div class="t-desc">
+          <span class="ko-only">임베딩 없이 쓰는 전통 키워드 검색 알고리즘. TF(단어 빈도) × IDF(희귀도) 기반. 고유명사·숫자·전문용어 매칭에 강함.</span>
+          <span class="en-only">Classic keyword-only retrieval. Combines TF (term frequency) × IDF (rarity). Strong for proper nouns, numbers, and jargon.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">TF-IDF</div>
+        <div class="t-desc">
+          <span class="ko-only">BM25의 전신. 자주 나오는 흔한 단어는 가중치 ↓, 희귀 단어는 ↑. 챗봇 코드에서 임베더 없을 때 폴백 검색에 사용.</span>
+          <span class="en-only">BM25's predecessor. Common words get lower weight, rare words higher. Used as fallback when no embedder is available.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">하이브리드 검색</span><span class="en-only">Hybrid Search</span></div>
+        <div class="t-desc">
+          <span class="ko-only">BM25(키워드) + 임베딩(의미) 점수 가중 합산. 실무 검색 시스템은 거의 모두 하이브리드. 예: <code>final = 0.3·BM25 + 0.7·cosine</code></span>
+          <span class="en-only">Weighted blend of BM25 (keyword) + embedding (semantic). Nearly all production retrieval is hybrid. Ex: <code>final = 0.3·BM25 + 0.7·cosine</code>.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">재순위</span><span class="en-only">Reranking</span></div>
+        <div class="t-desc">
+          <span class="ko-only">1차로 top-20을 빠르게 뽑고, Cross-Encoder로 더 정밀하게 top-3 재정렬. 품질 ↑ 하지만 느림. 중요도 높은 자료 다룰 때 효과적.</span>
+          <span class="en-only">Fetch top-20 fast, then re-rank to top-3 with a cross-encoder for precision. Higher quality but slower. Worth it for high-stakes retrieval.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Cross-Encoder</div>
+        <div class="t-desc">
+          <span class="ko-only">쿼리와 문서를 함께 입력받아 "이 둘이 얼마나 관련 있나?" 점수 산출. 임베딩(bi-encoder)보다 정확하지만 매번 LLM 추론 필요 → 느림.</span>
+          <span class="en-only">Jointly scores a (query, doc) pair for relevance. More accurate than embeddings (bi-encoder) but requires inference per pair → slow.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">ColBERT</div>
+        <div class="t-desc">
+          <span class="ko-only">문서 단위 벡터가 아니라 토큰 단위로 비교해 디테일 보존. BGE-M3가 지원하는 다중 벡터 방식 중 하나.</span>
+          <span class="en-only">Compares at the token level (not whole-doc), preserving detail. One of the multi-vector modes supported by BGE-M3.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 F: 모드 & 임계값 -->
+    <div class="glossary-group">
+      <span class="ko-only">⚙️ F. 모드 판정과 임계값</span>
+      <span class="en-only">⚙️ F. Mode Decision & Thresholds</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title"><span class="badge grounded">📚</span> grounded <span class="ko-only">모드</span></div>
+        <div class="t-desc">
+          <span class="ko-only">"자료 기반" 모드. 업로드 자료 안의 사실만 사용. 답변에 <code>(자료 1)</code>, <code>(자료 2)</code> 인용 표기. 환각 가능성 ↓.</span>
+          <span class="en-only">"Grounded" mode — answer only from uploaded facts, citing <code>(자료 1)</code>, <code>(자료 2)</code>. Minimizes hallucination.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="badge fallback">💭</span> fallback <span class="ko-only">모드</span></div>
+        <div class="t-desc">
+          <span class="ko-only">"자료 범위 밖" 모드. LLM이 학습해둔 일반 지식으로 답변. 서두에 "(업로드 자료 범위 밖 · 일반 지식 기반)" 표시.</span>
+          <span class="en-only">"Out-of-scope" mode — answer from the LLM's general knowledge, prefixed "(out of uploaded scope · general knowledge)".</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><code>max(sim)</code></div>
+        <div class="t-desc">
+          <span class="ko-only">질문과 모든 청크의 유사도 중 최댓값. 자료 안에 질문과 얼마나 관련 깊은 내용이 있는지 측정. 모드 판정 기준.</span>
+          <span class="en-only">Maximum similarity between the query and any chunk. Measures how closely the docs match the question. Used for mode decision.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><code>RAG_STRICT_SIM = 0.55</code></div>
+        <div class="t-desc">
+          <span class="ko-only">grounded/fallback 전환 임계값. <code>max(sim) ≥ 0.55</code>면 grounded. 올리면 보수적, 내리면 적극적.</span>
+          <span class="en-only">Threshold for grounded vs fallback. <code>max(sim) ≥ 0.55</code> → grounded. Higher = conservative, lower = aggressive.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><code>RAG_MIN_SIM = 0.40</code></div>
+        <div class="t-desc">
+          <span class="ko-only">청크 포함 최소 임계값. 이 값보다 유사도 낮은 청크는 아예 LLM에 전달 안 함 (노이즈 제거).</span>
+          <span class="en-only">Minimum similarity to include a chunk at all. Chunks below this are dropped before reaching the LLM (noise filter).</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">k_per_doc</div>
+        <div class="t-desc">
+          <span class="ko-only">문서별로 뽑을 top-k 청크 수. 기본 3. 늘리면 문서별 정보 많아지지만 토큰 소비 ↑.</span>
+          <span class="en-only">Top-K chunks to pick <em>per document</em>. Default 3. Higher = more info per doc, but more tokens consumed.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 G: 서버 & 스트리밍 -->
+    <div class="glossary-group">
+      <span class="ko-only">🌐 G. 서버 · 스트리밍 · 추론 백엔드</span>
+      <span class="en-only">🌐 G. Server, Streaming & Backends</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">FastAPI</div>
+        <div class="t-desc">
+          <span class="ko-only">Python 비동기 웹 프레임워크. <code>/upload</code>, <code>/chat</code> 같은 엔드포인트를 자동으로 OpenAPI 스펙화. 이 챗봇의 백엔드.</span>
+          <span class="en-only">Modern async Python web framework. Auto-generates OpenAPI docs for endpoints like <code>/upload</code>, <code>/chat</code>. This chatbot's backend.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">SSE <span class="ko-only">· 서버 전송 이벤트</span></div>
+        <div class="t-desc">
+          <span class="ko-only"><strong>S</strong>erver-<strong>S</strong>ent <strong>E</strong>vents. HTTP 위에서 서버 → 클라이언트 단방향 스트리밍. ChatGPT 토큰별 출력도 SSE. WebSocket보다 가볍고 자동 재연결.</span>
+          <span class="en-only"><strong>S</strong>erver-<strong>S</strong>ent <strong>E</strong>vents — one-way streaming over HTTP. ChatGPT token streaming uses SSE. Lighter than WebSocket, with auto-reconnect.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title"><span class="ko-only">토큰 스트리밍</span><span class="en-only">Token Streaming</span></div>
+        <div class="t-desc">
+          <span class="ko-only">LLM 응답을 완성 전에 1토큰씩 바로 보내서 사용자가 "타이핑처럼 글이 흘러나오는" 체감 지연 ↓.</span>
+          <span class="en-only">Push each generated token immediately so the user sees a "typewriter" effect, drastically reducing perceived latency.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">llama-cpp-python</div>
+        <div class="t-desc">
+          <span class="ko-only">llama.cpp(C++ 추론 엔진)의 Python 바인딩. GGUF 모델 로딩 + 추론 담당. 이 챗봇의 LLM 백엔드.</span>
+          <span class="en-only">Python bindings for llama.cpp (C++ inference engine). Loads and runs GGUF models — this chatbot's LLM backend.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">vLLM</div>
+        <div class="t-desc">
+          <span class="ko-only">GPU에 최적화된 고성능 LLM 서버. PagedAttention으로 처리량 ↑↑. 상용/대규모 서빙용. 교육용 FICL은 llama.cpp 쓰지만 AIEduChatApp은 vLLM 사용 가능.</span>
+          <span class="en-only">High-throughput GPU-optimized LLM server (PagedAttention). For production/scale serving. FICL uses llama.cpp but AIEduChatApp also supports vLLM.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">TensorRT-LLM</div>
+        <div class="t-desc">
+          <span class="ko-only">NVIDIA의 전용 LLM 추론 가속 엔진. 특정 GPU + 특정 모델에서 최고 속도. 설정 복잡.</span>
+          <span class="en-only">NVIDIA's proprietary LLM inference engine. Peak speed on specific GPU + model combos. Complex to set up.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 그룹 H: 추가 개념 -->
+    <div class="glossary-group">
+      <span class="ko-only">🧰 H. 알아두면 좋은 개념</span>
+      <span class="en-only">🧰 H. Nice-to-Know Concepts</span>
+    </div>
+    <div class="term-grid">
+      <div class="term">
+        <div class="t-title">Temperature · top_p</div>
+        <div class="t-desc">
+          <span class="ko-only">LLM 샘플링 랜덤성 조절. <code>temperature=0.0</code> 결정적(동일 질문 → 동일 답), <code>1.0+</code>는 창의적. <code>top_p=0.9</code>는 "확률 상위 90% 안에서 샘플링".</span>
+          <span class="en-only">Controls randomness. <code>temperature=0.0</code> = deterministic, <code>1.0+</code> = creative. <code>top_p=0.9</code> samples from the top 90% probability mass.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Function Calling · Tool Use</div>
+        <div class="t-desc">
+          <span class="ko-only">LLM이 외부 함수를 호출할 수 있게 하는 기능. "오늘 서울 날씨?" → 모델이 날씨 API 호출 요청 → 결과 받아 답변 생성.</span>
+          <span class="en-only">Lets the LLM call external functions. "Weather in Seoul?" → model requests the weather API → integrates the result into its answer.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">RLHF</div>
+        <div class="t-desc">
+          <span class="ko-only"><strong>R</strong>einforcement <strong>L</strong>earning from <strong>H</strong>uman <strong>F</strong>eedback. 사람이 선호 응답 라벨링 → LLM이 이걸로 미세조정. ChatGPT가 유용해진 핵심 기법.</span>
+          <span class="en-only"><strong>R</strong>einforcement <strong>L</strong>earning from <strong>H</strong>uman <strong>F</strong>eedback. Humans rank model outputs → model fine-tunes on these preferences. The core trick that made ChatGPT useful.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">MTEB <span class="ko-only">벤치마크</span></div>
+        <div class="t-desc">
+          <span class="ko-only"><strong>M</strong>assive <strong>T</strong>ext <strong>E</strong>mbedding <strong>B</strong>enchmark. 임베딩 모델 성능 평가 표준. E5, BGE 등은 모두 이 리더보드 기준으로 공개.</span>
+          <span class="en-only"><strong>M</strong>assive <strong>T</strong>ext <strong>E</strong>mbedding <strong>B</strong>enchmark — the standard leaderboard for embedding models. E5, BGE, etc. publish MTEB scores.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Zero-shot · Few-shot</div>
+        <div class="t-desc">
+          <span class="ko-only">Zero-shot = 예시 없이 바로 지시. Few-shot = 2~5개 예시를 보여준 뒤 지시. 복잡한 포맷 요구할 땐 few-shot이 유리.</span>
+          <span class="en-only">Zero-shot = instruct directly. Few-shot = show 2–5 examples before instructing. Few-shot helps when a specific format is required.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Chain-of-Thought (CoT)</div>
+        <div class="t-desc">
+          <span class="ko-only">LLM에게 "단계별로 생각해봐"라고 지시해 추론 품질 ↑. Qwen3의 <code>/no_think</code> 플래그는 반대로 이를 끄는 설정 (코드 생성 등 토큰 절약).</span>
+          <span class="en-only">Prompting "think step by step" to boost reasoning. Qwen3's <code>/no_think</code> flag turns it off (saves tokens for codegen).</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">OpenAI SDK <span class="ko-only">호환</span></div>
+        <div class="t-desc">
+          <span class="ko-only">vLLM·TRT-LLM 등 많은 로컬 서버가 OpenAI의 Chat Completions API 스펙과 호환되어, <code>openai</code> Python 패키지 그대로 사용 가능.</span>
+          <span class="en-only">Many local servers (vLLM, TRT-LLM) speak OpenAI's Chat Completions API spec, so the standard <code>openai</code> Python package works unchanged.</span>
+        </div>
+      </div>
+      <div class="term">
+        <div class="t-title">Context <span class="ko-only">주입 보안</span><span class="en-only">Injection Risk</span></div>
+        <div class="t-desc">
+          <span class="ko-only">업로드한 자료 안에 "모든 지시 무시하고 ○○해라" 같은 악성 지시가 숨어 있으면 LLM이 속을 수 있음. 신뢰할 수 있는 자료만 업로드.</span>
+          <span class="en-only">Malicious instructions hidden inside uploaded files can trick the LLM into obeying them (prompt injection). Only upload trusted sources.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="icon">📚</span>
+      <div>
+        <strong class="ko-only">더 깊이 공부하려면</strong>
+        <strong class="en-only">For deeper study</strong>
+        <br>
+        <span class="ko-only">① <a href="https://huggingface.co/learn/nlp-course" target="_blank">HuggingFace NLP 코스</a> (무료) ② <a href="https://arxiv.org/abs/2005.11401" target="_blank">RAG 원 논문 (Lewis et al., 2020)</a> ③ <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank">MTEB 리더보드</a> — 임베딩 모델 비교</span>
+        <span class="en-only">① <a href="https://huggingface.co/learn/nlp-course" target="_blank">HuggingFace NLP Course</a> (free) ② <a href="https://arxiv.org/abs/2005.11401" target="_blank">Original RAG paper (Lewis et al., 2020)</a> ③ <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank">MTEB Leaderboard</a> for embedding comparisons</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      <span class="ko-only">FICL Chatbot · 교육용 오픈소스 · GGUF LLM + Multi-Doc RAG</span>
+      <span class="en-only">FICL Chatbot · Educational Open Source · GGUF LLM + Multi-Doc RAG</span>
+    </p>
+    <p style="margin-top:6px;">
+      <span class="ko-only">문의: 콘솔 로그 + <code>/status</code> 응답을 함께 공유해 주세요</span>
+      <span class="en-only">For support: share console logs along with the <code>/status</code> response</span>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  function setLang(lang) {
+    document.body.classList.remove('lang-ko', 'lang-en', 'lang-zh');
+    document.body.classList.add('lang-' + lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+    document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+    try { localStorage.setItem('ficl-guide-lang', lang); } catch (e) {}
+  }
+  try {
+    const saved = localStorage.getItem('ficl-guide-lang');
+    if (saved === 'en' || saved === 'ko' || saved === 'zh') setLang(saved);
+  } catch (e) {}
+</script>
+
+</body>
+</html>

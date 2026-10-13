@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FICL Chatbot</title>
+<style>
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; color: #172033; background: #edf0f8; }
+  button, select, textarea, input { font: inherit; }
+  button { cursor: pointer; }
+  .app { max-width: 1000px; min-height: 100vh; height: 100dvh; margin: auto; display: flex; flex-direction: column; background: #fff; box-shadow: 0 0 28px #22306b12; }
+  header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 20px; color: #fff; background: linear-gradient(120deg, #4338ca, #7c3aed); }
+  header h1 { margin: 0; font-size: 18px; letter-spacing: .2px; }
+  .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .header-actions select { max-width: min(66vw, 380px); padding: 8px 10px; border: 0; border-radius: 8px; background: #fff; color: #1f2937; }
+  .header-actions #language-select { max-width: 116px; }
+  .header-actions button { padding: 7px 10px; border: 1px solid #ffffff9c; border-radius: 7px; color: #fff; background: #ffffff20; font-size: 12px; }
+  .header-actions button:disabled { opacity: .6; cursor: wait; }
+  .header-actions a { color: #fff; font-size: 13px; text-decoration: none; border-bottom: 1px solid #ffffff9c; }
+  .auth, .warning { margin: 12px 18px 0; padding: 11px 14px; border-radius: 9px; font-size: 13px; }
+  .auth { background: #eef2ff; border: 1px solid #a5b4fc; }
+  .auth p { margin: 0 0 8px; }
+  .auth-row { display: flex; gap: 8px; }
+  .auth input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #a5b4fc; border-radius: 6px; }
+  .auth button { padding: 8px 12px; color: #fff; border: 0; border-radius: 6px; background: #4f46e5; }
+  .warning { background: #fef3c7; border: 1px solid #fbbf24; color: #78350f; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 18px; background: #f8f7ff; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  .upload-label, .toolbar button { padding: 7px 12px; border-radius: 7px; background: #fff; font-size: 13px; }
+  .upload-label { color: #4338ca; border: 1px solid #a5b4fc; cursor: pointer; font-weight: 600; }
+  .upload-label:has(input:disabled) { opacity: .6; cursor: wait; }
+  .upload-label input { display: none; }
+  .toolbar button { color: #be123c; border: 1px solid #fda4af; }
+  .toolbar .muted { color: #64748b; }
+  .file-panel { padding: 10px 18px; border-bottom: 1px solid #e5e7eb; background: #fcfcff; }
+  .file-panel h2 { margin: 0 0 7px; font-size: 13px; color: #334155; }
+  .file-list { display: flex; flex-wrap: wrap; gap: 7px; max-height: 126px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+  .file-list li { display: flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%; padding: 5px 7px 5px 10px; border: 1px solid #dce2f1; border-radius: 8px; background: #fff; font-size: 12px; }
+  .file-list .file-name { overflow-wrap: anywhere; font-weight: 600; }
+  .file-list .file-info { color: #64748b; white-space: nowrap; }
+  .file-list button { padding: 2px 6px; border: 0; border-radius: 5px; color: #be123c; background: #fff1f2; }
+  .file-list .empty { color: #64748b; border: 0; background: transparent; }
+  .messages { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 16px; padding: 22px 18px; }
+  .message { display: flex; align-items: flex-start; gap: 9px; max-width: 86%; }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
+  .avatar { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #5745df; color: #fff; font-size: 16px; }
+  .message.user .avatar { background: #64748b; }
+  .message-body { min-width: 0; }
+  .bubble { padding: 11px 15px; border-radius: 14px; border-top-left-radius: 4px; background: #f1f3f7; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; font-size: 14px; }
+  .message.user .bubble { color: #fff; background: linear-gradient(120deg, #4f46e5, #7c3aed); border-radius: 14px; border-top-right-radius: 4px; }
+  .message-meta { padding: 5px 3px 0; color: #64748b; font-size: 12px; line-height: 1.5; }
+  .composer { display: flex; align-items: stretch; gap: 10px; padding: 13px 18px; border-top: 1px solid #e5e7eb; }
+  .composer textarea { flex: 1; min-width: 0; height: 46px; max-height: 150px; resize: none; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 9px; outline: none; line-height: 1.5; }
+  .composer textarea:focus { border-color: #6366f1; box-shadow: 0 0 0 2px #6366f11c; }
+  .composer button { padding: 0 21px; border: 0; border-radius: 9px; color: #fff; background: #4f46e5; font-weight: 600; }
+  .composer button:disabled { cursor: not-allowed; background: #a5a5b7; }
+  .toast { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); max-width: min(92vw, 600px); padding: 10px 18px; border-radius: 20px; background: #1e293be8; color: #fff; font-size: 13px; z-index: 10; }
+  @media (max-width: 600px) { .message { max-width: 95%; } .toolbar .muted { width: 100%; } .header-actions #model-select { max-width: 50vw; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🤖 FICL Chatbot</h1>
+    <div class="header-actions">
+      <select id="language-select" aria-label="对话语言"><option value="zh">中文</option><option value="ko">한국어</option></select>
+      <select id="model-select" aria-label="选择模型"><option value="">正在加载模型…</option></select>
+      <button id="verify-button" type="button" data-i18n="verifyButton" hidden>测试 API 连接</button>
+      <a href="/guide" target="_blank" rel="noopener" data-i18n="guide">使用指南</a>
+    </div>
+  </header>
+  <section id="auth-box" class="auth" hidden>
+    <p data-i18n="authHelp">此服务需要访问令牌。令牌仅保存在当前浏览器会话中。</p>
+    <div class="auth-row"><input id="access-token" type="password" autocomplete="off" placeholder="输入 APP_ACCESS_TOKEN"><button id="connect-button" type="button" data-i18n="connect">连接</button></div>
+  </section>
+  <div id="warning" class="warning" role="alert" hidden></div>
+  <div class="toolbar">
+    <label class="upload-label">📁 <span data-i18n="uploadLabel">上传资料</span><input id="file-input" type="file" multiple accept=".pdf,.docx,.xlsx,.txt,.md"></label>
+    <span class="muted" data-i18n="uploadHelp">新文件会追加；同名文件会替换。单个 ≤20 MB，每次最多 10 个且总量 ≤50 MB。</span>
+    <span id="index-count" class="muted"></span>
+    <button id="reset-button" type="button" data-i18n="resetButton" hidden>清空全部资料</button>
+  </div>
+  <section id="file-panel" class="file-panel" aria-label="已上传文件目录">
+    <h2 id="file-heading">已上传文件（0）</h2>
+    <ul id="file-list" class="file-list"><li class="empty">暂无文件</li></ul>
+  </section>
+  <main id="messages" class="messages" aria-live="polite"></main>
+  <form id="chat-form" class="composer">
+    <textarea id="message-input" rows="1" placeholder="输入问题…（Shift+Enter 换行）" aria-label="消息"></textarea>
+    <button id="send-button" type="submit" data-i18n="send" disabled>发送</button>
+  </form>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+<script>
+(() => {
+  "use strict";
+  const el = id => document.getElementById(id);
+  const ui = {
+    language: el("language-select"), select: el("model-select"), verify: el("verify-button"),
+    auth: el("auth-box"), token: el("access-token"), filePanel: el("file-panel"),
+    connect: el("connect-button"), warning: el("warning"), files: el("file-input"),
+    count: el("index-count"), reset: el("reset-button"), fileHeading: el("file-heading"),
+    fileList: el("file-list"), messages: el("messages"),
+    form: el("chat-form"), input: el("message-input"), send: el("send-button"),
+    toast: el("toast"),
+  };
+  const MAX_FILE = 20 * 1024 * 1024;
+  const MAX_TOTAL = 50 * 1024 * 1024;
+  const state = { models: [], selected: "", messages: [], streaming: false,
+    files: [], ragChunks: 0, ragError: null, statusData: null, language: "zh" };
+  const translations = {
+    zh: {
+      verifyButton: "测试 API 连接", guide: "使用指南", authHelp: "此服务需要访问令牌。令牌仅保存在当前浏览器会话中。",
+      connect: "连接", tokenPlaceholder: "输入 APP_ACCESS_TOKEN", uploadLabel: "上传资料", uploadHelp: "新文件会追加；同名文件会替换。单个 ≤20 MB，每次最多 10 个且总量 ≤50 MB。",
+      resetButton: "清空全部资料", send: "发送", languageLabel: "对话语言", modelLabel: "选择模型", filePanelLabel: "已上传文件目录",
+      messageLabel: "消息", inputPlaceholder: "输入问题…（Shift+Enter 换行）", loadingModels: "正在加载模型…",
+      noModels: "没有可用模型", localModels: "💻 本地 GGUF", apiModels: "☁️ API 模型", unavailable: "（{reason}）",
+      missingLocal: "尚未下载模型文件", missingRuntime: "未安装 llama-cpp-python", missingKey: "后端未配置 API Key",
+      indexed: "📚 已索引 {count} 个片段", indexError: "索引无法加载：{detail}。请先备份索引，再使用“清空全部资料”。",
+      noAvailableModel: "没有可用模型：请在后端配置 API Key，或安装本地模型及推理依赖。",
+      filesHeading: "已上传文件（{count}）", noFiles: "暂无文件", originalMissing: "原文件未保存", chunks: "{count} 个片段",
+      delete: "删除", deleteFileLabel: "删除文件 {name}", serviceError: "无法获取服务状态：{detail}",
+      uploadLimit: "上传超出数量或大小限制。", uploadSuccess: "已保存资料，索引共有 {count} 个片段。", uploadFailed: "上传失败：{detail}",
+      resetConfirm: "确定永久删除全部已上传文件及其索引吗？此操作不可撤销。", resetSuccess: "全部上传文件和索引已清空。", resetFailed: "清空失败：{detail}",
+      deleteConfirm: "确定永久删除“{name}”及其索引片段吗？", deleteSuccess: "已删除：{name}", deleteFailed: "删除失败：{detail}",
+      verifyConfirm: "将向模型服务发送一次极短测试请求，可能产生少量 API 用量。继续吗？", verifySuccess: "API 连接与模型配置已验证。\n{model}", verifyFailed: "API 测试失败：{detail}",
+      generating: "正在生成回答…", grounded: "📚 基于资料：{sources}", searched: "已检索", general: "💭 资料范围外 · 通用知识",
+      invalidStream: "服务器返回了无法解析的流数据。", emptyAnswer: "模型没有返回文字。", streamUnsupported: "浏览器不支持流式响应。",
+      streamInterrupted: "回答流提前中断。", answerError: "错误：{detail}", requestFailed: "请求失败 (HTTP {status})",
+      welcome: "你好！可以直接提问，也可以先上传资料。上传不同文件会追加资料；重新上传同名文件会替换该文件的旧内容。",
+    },
+    ko: {
+      verifyButton: "API 연결 테스트", guide: "사용 안내", authHelp: "이 서비스에는 액세스 토큰이 필요합니다. 토큰은 현재 브라우저 세션에만 저장됩니다.",
+      connect: "연결", tokenPlaceholder: "APP_ACCESS_TOKEN 입력", uploadLabel: "자료 업로드", uploadHelp: "새 파일은 추가되고 같은 이름의 파일은 교체됩니다. 파일당 최대 20 MB, 한 번에 10개·총 50 MB까지 가능합니다.",
+      resetButton: "모든 자료 삭제", send: "전송", languageLabel: "대화 언어", modelLabel: "모델 선택", filePanelLabel: "업로드한 파일 목록",
+      messageLabel: "메시지", inputPlaceholder: "질문을 입력하세요… (Shift+Enter: 줄바꿈)", loadingModels: "모델을 불러오는 중…",
+      noModels: "사용 가능한 모델 없음", localModels: "💻 로컬 GGUF", apiModels: "☁️ API 모델", unavailable: "({reason})",
+      missingLocal: "모델 파일을 다운로드하지 않음", missingRuntime: "llama-cpp-python 미설치", missingKey: "서버에 API Key가 설정되지 않음",
+      indexed: "📚 {count}개 조각 색인됨", indexError: "색인을 불러올 수 없습니다: {detail}. 먼저 색인을 백업한 뒤 ‘모든 자료 삭제’를 사용하세요.",
+      noAvailableModel: "사용 가능한 모델이 없습니다. 서버에 API Key를 설정하거나 로컬 모델과 추론 라이브러리를 설치하세요.",
+      filesHeading: "업로드한 파일 ({count})", noFiles: "파일 없음", originalMissing: "원본 파일이 저장되지 않음", chunks: "{count}개 조각",
+      delete: "삭제", deleteFileLabel: "파일 삭제: {name}", serviceError: "서버 상태를 확인할 수 없습니다: {detail}",
+      uploadLimit: "업로드 가능한 파일 수 또는 크기를 초과했습니다.", uploadSuccess: "자료가 저장되었습니다. 색인에는 {count}개 조각이 있습니다.", uploadFailed: "업로드 실패: {detail}",
+      resetConfirm: "업로드한 파일과 색인을 모두 영구 삭제할까요? 되돌릴 수 없습니다.", resetSuccess: "업로드한 파일과 색인을 모두 삭제했습니다.", resetFailed: "전체 삭제 실패: {detail}",
+      deleteConfirm: "‘{name}’ 파일과 해당 색인 조각을 영구 삭제할까요?", deleteSuccess: "삭제됨: {name}", deleteFailed: "삭제 실패: {detail}",
+      verifyConfirm: "모델 서비스에 짧은 테스트 요청을 보냅니다. 소량의 API 사용량이 발생할 수 있습니다. 계속할까요?", verifySuccess: "API 연결과 모델 설정이 확인되었습니다.\n{model}", verifyFailed: "API 테스트 실패: {detail}",
+      generating: "답변 생성 중…", grounded: "📚 자료 기반: {sources}", searched: "검색됨", general: "💭 자료 범위 밖 · 일반 지식",
+      invalidStream: "서버가 해석할 수 없는 스트림 데이터를 반환했습니다.", emptyAnswer: "모델이 텍스트를 반환하지 않았습니다.", streamUnsupported: "브라우저가 스트리밍 응답을 지원하지 않습니다.",
+      streamInterrupted: "답변 스트림이 중간에 끊겼습니다.", answerError: "오류: {detail}", requestFailed: "요청 실패 (HTTP {status})",
+      welcome: "안녕하세요! 바로 질문하거나 먼저 자료를 업로드할 수 있습니다. 새 파일은 자료에 추가되며, 같은 이름으로 다시 업로드하면 이전 내용이 교체됩니다.",
+    },
+  };
+  const metaRenderers = [];
+  let welcome;
+  let toastTimer;
+
+  function t(key, values = {}) {
+    return translations[state.language][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ""));
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = state.language === "ko" ? "ko" : "zh-CN";
+    ui.language.value = state.language;
+    ui.language.setAttribute("aria-label", t("languageLabel"));
+    ui.select.setAttribute("aria-label", t("modelLabel"));
+    ui.filePanel.setAttribute("aria-label", t("filePanelLabel"));
+    ui.input.setAttribute("aria-label", t("messageLabel"));
+    ui.token.placeholder = t("tokenPlaceholder");
+    ui.input.placeholder = t("inputPlaceholder");
+    for (const node of document.querySelectorAll("[data-i18n]")) node.textContent = t(node.dataset.i18n);
+    if (state.statusData) renderModels(state.statusData);
+    else if (ui.select.options.length === 1) ui.select.options[0].textContent = t("loadingModels");
+    renderFiles(state.files);
+    for (const render of metaRenderers) render();
+    if (welcome && state.messages.length === 1) {
+      welcome.bubble.textContent = t("welcome");
+      state.messages[0].text = t("welcome");
+    }
+  }
+
+  function savedToken() {
+    try { return sessionStorage.getItem("ficl_access_token") || ""; }
+    catch (_) { return ui.token.value.trim(); }
+  }
+
+  function storeToken(value) {
+    try { sessionStorage.setItem("ficl_access_token", value); }
+    catch (_) { /* Private browsing may disable storage; input remains available. */ }
+  }
+
+  function request(path, options = {}) {
+    const headers = new Headers(options.headers || {});
+    const token = savedToken() || ui.token.value.trim();
+    if (token) headers.set("Authorization", "Bearer " + token);
+    return fetch(path, { ...options, headers });
+  }
+
+  async function responseError(response) {
+    let detail = t("requestFailed", { status: response.status });
+    try {
+      const body = await response.json();
+      if (typeof body.detail === "string") detail = body.detail;
+    } catch (_) {}
+    if (response.status === 401) ui.auth.hidden = false;
+    throw new Error(detail);
+  }
+
+  function toast(message) {
+    clearTimeout(toastTimer);
+    ui.toast.textContent = message;
+    ui.toast.hidden = false;
+    toastTimer = setTimeout(() => { ui.toast.hidden = true; }, 3200);
+  }
+
+  function setWarning(message) {
+    ui.warning.textContent = message;
+    ui.warning.hidden = !message;
+  }
+
+  function updateSend() {
+    const selected = state.models.find(m => m.key === state.selected && m.available);
+    ui.send.disabled = state.streaming || !selected || !ui.input.value.trim();
+    ui.verify.hidden = !selected || selected.provider !== "api";
+    ui.input.disabled = state.streaming;
+  }
+
+  function addMessage(role, text) {
+    const row = document.createElement("div");
+    row.className = "message " + role;
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "👤" : "🤖";
+    const body = document.createElement("div");
+    body.className = "message-body";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    const meta = document.createElement("div");
+    meta.className = "message-meta";
+    body.append(bubble, meta);
+    row.append(avatar, body);
+    ui.messages.append(row);
+    ui.messages.scrollTop = ui.messages.scrollHeight;
+    return { bubble, meta };
+  }
+
+  function renderModels(data) {
+    state.statusData = data;
+    state.models = data.models || [];
+    const prior = state.selected;
+    state.selected = state.models.some(m => m.key === prior && m.available)
+      ? prior : (data.default_model || "");
+    ui.select.replaceChildren();
+    if (!state.selected) {
+      const option = new Option(t("noModels"), "");
+      option.disabled = true;
+      ui.select.add(option);
+    }
+    for (const [provider, label] of [["local", t("localModels")], ["api", t("apiModels")]]) {
+      const groupModels = state.models.filter(m => m.provider === provider);
+      if (!groupModels.length) continue;
+      const group = document.createElement("optgroup");
+      group.label = label;
+      for (const model of groupModels) {
+        const reasons = { "尚未下载模型文件": "missingLocal", "未安装 llama-cpp-python": "missingRuntime", "后端未配置 API Key": "missingKey" };
+        const reason = reasons[model.unavailable_reason] ? t(reasons[model.unavailable_reason]) : model.unavailable_reason;
+        const option = new Option(model.name + (model.available ? "" : t("unavailable", { reason })), model.key);
+        option.disabled = !model.available;
+        group.append(option);
+      }
+      ui.select.add(group);
+    }
+    ui.select.value = state.selected;
+    state.ragChunks = data.rag_chunks || 0;
+    state.ragError = data.rag_error || null;
+    ui.count.textContent = state.ragChunks ? t("indexed", { count: state.ragChunks }) : "";
+    ui.reset.hidden = !state.ragChunks && !state.ragError && !state.files.length;
+    setWarning(data.rag_error
+      ? t("indexError", { detail: data.rag_error })
+      : state.selected ? "" : t("noAvailableModel"));
+    updateSend();
+  }
+
+  function renderFiles(files) {
+    state.files = files;
+    ui.fileHeading.textContent = t("filesHeading", { count: files.length });
+    ui.fileList.replaceChildren();
+    if (!files.length) {
+      const empty = document.createElement("li");
+      empty.className = "empty";
+      empty.textContent = t("noFiles");
+      ui.fileList.append(empty);
+    }
+    for (const file of files) {
+      const item = document.createElement("li");
+      const name = document.createElement("span");
+      name.className = "file-name";
+      name.textContent = file.name;
+      const info = document.createElement("span");
+      info.className = "file-info";
+      const size = file.size == null ? t("originalMissing") : (file.size < 1024
+        ? file.size + " B" : (file.size / 1024).toFixed(1) + " KB");
+      info.textContent = size + " · " + t("chunks", { count: file.chunks });
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = t("delete");
+      remove.setAttribute("aria-label", t("deleteFileLabel", { name: file.name }));
+      remove.addEventListener("click", () => deleteFile(file.name));
+      item.append(name, info, remove);
+      ui.fileList.append(item);
+    }
+    ui.reset.hidden = !state.ragChunks && !state.ragError && !files.length;
+  }
+
+  async function refreshStatus() {
+    try {
+      const response = await request("/status");
+      if (!response.ok) await responseError(response);
+      renderModels(await response.json());
+      const filesResponse = await request("/files");
+      if (!filesResponse.ok) await responseError(filesResponse);
+      renderFiles((await filesResponse.json()).files || []);
+      ui.auth.hidden = true;
+    } catch (error) {
+      state.statusData = null;
+      state.models = [];
+      state.selected = "";
+      renderFiles([]);
+      updateSend();
+      setWarning(t("serviceError", { detail: error.message }));
+    }
+  }
+
+  async function uploadFiles() {
+    const files = Array.from(ui.files.files || []);
+    if (!files.length) return;
+    if (files.length > 10 || files.some(f => f.size > MAX_FILE) ||
+        files.reduce((sum, f) => sum + f.size, 0) > MAX_TOTAL) {
+      toast(t("uploadLimit"));
+      ui.files.value = "";
+      return;
+    }
+    const body = new FormData();
+    for (const file of files) body.append("files", file);
+    ui.files.disabled = true;
+    try {
+      const response = await request("/upload", { method: "POST", body });
+      if (!response.ok) await responseError(response);
+      const data = await response.json();
+      toast(t("uploadSuccess", { count: data.chunks }));
+      await refreshStatus();
+    } catch (error) { toast(t("uploadFailed", { detail: error.message })); }
+    finally { ui.files.disabled = false; ui.files.value = ""; }
+  }
+
+  async function resetIndex() {
+    if (!confirm(t("resetConfirm"))) return;
+    try {
+      const response = await request("/reset_index", { method: "POST" });
+      if (!response.ok) await responseError(response);
+      toast(t("resetSuccess"));
+      await refreshStatus();
+    } catch (error) { toast(t("resetFailed", { detail: error.message })); }
+  }
+
+  async function deleteFile(name) {
+    if (!confirm(t("deleteConfirm", { name }))) return;
+    try {
+      const response = await request("/files?name=" + encodeURIComponent(name), { method: "DELETE" });
+      if (!response.ok) await responseError(response);
+      toast(t("deleteSuccess", { name }));
+      await refreshStatus();
+    } catch (error) { toast(t("deleteFailed", { detail: error.message })); }
+  }
+
+  async function verifyModel() {
+    const model = state.selected;
+    if (!model || !confirm(t("verifyConfirm"))) return;
+    ui.verify.disabled = true;
+    try {
+      const response = await request("/verify_model", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model }),
+      });
+      if (!response.ok) await responseError(response);
+      toast(t("verifySuccess", { model }));
+    } catch (error) { toast(t("verifyFailed", { detail: error.message })); }
+    finally { ui.verify.disabled = false; }
+  }
+
+  async function sendMessage(event) {
+    event.preventDefault();
+    const message = ui.input.value.trim();
+    if (!message || state.streaming || !state.selected) return;
+    const history = state.messages.slice(-6).map(m => [m.role, m.text]);
+    addMessage("user", message);
+    state.messages.push({ role: "user", text: message });
+    ui.input.value = "";
+    ui.input.style.height = "46px";
+    state.streaming = true;
+    updateSend();
+    const answer = addMessage("assistant", t("generating"));
+    let full = "", finished = false, modelName = "", ragAvailable = false;
+    let ragMode = "", sources = [];
+    const updateMeta = () => {
+      const parts = [];
+      if (modelName) parts.push("🧠 " + modelName);
+      if (ragAvailable) parts.push(ragMode === "grounded"
+        ? t("grounded", { sources: sources.length ? sources.join("、") : t("searched") })
+        : t("general"));
+      answer.meta.textContent = parts.join(" · ");
+    };
+    metaRenderers.push(updateMeta);
+    const processEvent = raw => {
+      if (!raw || raw === "[DONE]") return;
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (_) { throw new Error(t("invalidStream")); }
+      if (data.meta) {
+        modelName = data.model_name || modelName;
+        ragAvailable = !!data.rag_available;
+        ragMode = data.rag_mode || "";
+        sources = Array.isArray(data.rag_sources) ? data.rag_sources : [];
+        updateMeta();
+      }
+      if (typeof data.token === "string") {
+        full += data.token;
+        answer.bubble.textContent = full;
+        ui.messages.scrollTop = ui.messages.scrollHeight;
+      }
+      if (data.done) {
+        finished = true;
+        full = typeof data.text === "string" ? data.text : full;
+        answer.bubble.textContent = full || t("emptyAnswer");
+        modelName = data.model_name || modelName;
+        ragMode = data.rag_mode || ragMode;
+        sources = Array.isArray(data.sources) ? data.sources : sources;
+        updateMeta();
+      }
+      if (data.error) throw new Error(String(data.error));
+    };
+    try {
+      const response = await request("/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history, model: state.selected, language: state.language }),
+      });
+      if (!response.ok) await responseError(response);
+      if (!response.body) throw new Error(t("streamUnsupported"));
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const consume = chunk => {
+        buffer += chunk;
+        let newline;
+        while ((newline = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, newline).trimEnd();
+          buffer = buffer.slice(newline + 1);
+          if (line.startsWith("data:")) processEvent(line.slice(5).trim());
+        }
+      };
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        consume(decoder.decode(value, { stream: true }));
+      }
+      consume(decoder.decode());
+      if (buffer.trim().startsWith("data:")) processEvent(buffer.trim().slice(5).trim());
+      if (!finished) throw new Error(t("streamInterrupted"));
+    } catch (error) {
+      answer.bubble.textContent = (full ? full + "\n\n" : "") + t("answerError", { detail: error.message });
+    } finally {
+      state.messages.push({ role: "assistant", text: answer.bubble.textContent });
+      state.streaming = false;
+      updateSend();
+      ui.input.focus();
+      ui.messages.scrollTop = ui.messages.scrollHeight;
+    }
+  }
+
+  ui.connect.addEventListener("click", () => { storeToken(ui.token.value.trim()); refreshStatus(); });
+  ui.token.addEventListener("keydown", e => { if (e.key === "Enter") ui.connect.click(); });
+  ui.language.addEventListener("change", () => {
+    state.language = ui.language.value;
+    try { localStorage.setItem("ficl_chat_language", state.language); } catch (_) {}
+    applyLanguage();
+  });
+  ui.select.addEventListener("change", () => { state.selected = ui.select.value; updateSend(); });
+  ui.verify.addEventListener("click", verifyModel);
+  ui.files.addEventListener("change", uploadFiles);
+  ui.reset.addEventListener("click", resetIndex);
+  ui.form.addEventListener("submit", sendMessage);
+  ui.input.addEventListener("input", () => {
+    ui.input.style.height = "46px";
+    ui.input.style.height = Math.min(ui.input.scrollHeight, 150) + "px";
+    updateSend();
+  });
+  ui.input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ui.form.requestSubmit(); }
+  });
+  try {
+    const savedLanguage = localStorage.getItem("ficl_chat_language");
+    if (savedLanguage === "zh" || savedLanguage === "ko") state.language = savedLanguage;
+  } catch (_) {}
+  welcome = addMessage("assistant", t("welcome"));
+  state.messages.push({ role: "assistant", text: t("welcome") });
+  applyLanguage();
+  refreshStatus();
+})();
+</script>
+</body>
+</html>

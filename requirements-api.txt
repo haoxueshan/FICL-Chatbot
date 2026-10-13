@@ -1,0 +1,12 @@
+# API 모델 + RAG 모드. 로컬 GGUF 추론 라이브러리는 설치하지 않음.
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+pydantic>=2.7.0
+httpx>=0.27.0
+sentence-transformers>=3.0.0
+numpy>=1.26.0
+pypdf>=4.2.0
+python-docx>=1.1.0
+pandas>=2.2.0
+openpyxl>=3.1.0

@@ -1,0 +1,27 @@
+# 가상환경
+.venv/
+__pycache__/
+*.pyc
+
+# 모델 파일 (학생이 직접 다운로드 — 용량 큼)
+models/*.gguf
+
+# RAG 인덱스 (자동 생성)
+rag_index/
+uploads/
+textWord/
+
+# 이전 배포 압축본
+*.zip
+
+# 서버별 모델 설정과 로컬 키 저장소 (실제 키는 공개 파일에 넣지 않음)
+api_models.json
+api_keys.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
